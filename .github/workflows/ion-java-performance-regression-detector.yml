@@ -38,7 +38,7 @@ jobs:
           ref: master
       - run: mvn clean install
 
-      - name: Check the version of ion-java and ion-java-benchmark-cli
+      - name: Check the version of ion-java
         run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
 
       - name: Generate test Ion Data
@@ -46,7 +46,6 @@ jobs:
 
       - name: Test read preformance of the ion-java from the current commit
         run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar read testWorkflow.ion -o readPerformanceCurrent.ion -r ion
-
 
       - name: Clean maven dependency repository
         run : rm -r /home/runner/.m2
@@ -66,7 +65,7 @@ jobs:
           ref: master
       - run: mvn clean install
 
-      - name: Check the version of ion-java and ion-java-benchmark-cli
+      - name: Check the version of ion-java
         run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
 
       - name: Test read preformance of ion-java from the new commit
