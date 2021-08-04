@@ -1,0 +1,134 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Ion Jave performance regression detector
+
+on:
+  push:
+    branches: [ regression-test ]
+  pull_request:
+    branches: [ regression-test ]
+
+jobs:
+  detetct-regression:
+    name: Detetct Regression
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Checkout the ion-java from the existing commit.
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+          submodules: recursive
+      - run: git checkout HEAD^
+
+      - name: Build ion-java based on the existing commit
+        run: mvn clean install
+
+      - name: Checkout ion-java-benchmark-cli
+        uses: actions/checkout@v2
+        with:
+          repository: linlin-s/ion-java-benchmark-cli
+          ref: test-linls
+
+      - name: Build ion-java-benchmark-cli based on the current ion-java
+        run: mvn clean install
+
+      - name: Check the version of ion-java.
+        run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
+
+      - name: Generate test Ion Data
+        run: |
+          mkdir -p testData
+          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testStruct.isl /home/runner/work/ion-java/ion-java/testData/testStruct.10n
+          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testList.isl /home/runner/work/ion-java/ion-java/testData/testList.10n
+          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testNestedStruct.isl /home/runner/work/ion-java/ion-java/testData/testNestedStruct.10n
+      - name: Upload test Ion Data to artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: test Ion Data
+          path: testData
+
+      - name: Benchmark ion-java from the existing commit
+        run: |
+          mkdir -p benchmarkResults
+          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
+      - name: Upload benchmark results to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Benchmark result
+          path: benchmarkResults
+
+      - name: Clean maven dependency repository
+        run : rm -r /home/runner/.m2
+
+      - name: Checkout ion-java repository from the new commit
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Build ion-java from the new commit
+        run: mvn clean install
+
+      - name: Checkout ion-java-benchmark-cli
+        uses: actions/checkout@v2
+        with:
+          repository: linlin-s/ion-java-benchmark-cli
+          ref: test-linls
+
+      - name: Build ion-java-benchmark-cli based on the new ion-java
+        run: mvn clean install
+
+      - name: Check the version of ion-java
+        run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
+
+      - name: Create directories for test data and benchmark results
+        run: |
+          mkdir -p benchmarkResults
+          mkdir -p testData
+      - name: Download test Ion Data to artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: test Ion Data
+          path: testData
+
+      - name: Download benchmark results of ion-java from the existing commit to artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: Benchmark result
+          path: benchmarkResults
+
+      - name: Benchmark ion-java from the new commit and add the generated benchmark result to the existing directory
+        run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
+
+
+      - name: Upload new benchmark results directory to artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Benchmark result
+          path: benchmarkResults
+
+      - name: Detect performance regression
+        id: regression_result
+        run: |
+          cd benchmarkResults
+          result=true
+          for FILE in *; do message=$(java -jar /home/runner/work/ion-java/ion-java/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion --threshold /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/threshold.ion $FILE/report.ion | tee /dev/stderr) && if [ "$message" != "" ]; then result=false;fi; done
+          echo "::set-output name=regression-result::$result"
+      - name: Upload comparison reports to the benchmark results directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: Benchmark result
+          path: benchmarkResults
+
+      - name: Fail the workflow if regression happened
+        env:
+          regression_detect: ${{steps.regression_result.outputs.regression-result}}
+        if: ${{ env.regression_detect == 'false' }}
+        run: exit 1
