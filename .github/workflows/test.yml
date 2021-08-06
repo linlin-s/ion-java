@@ -21,7 +21,6 @@ jobs:
       - name: Checkout the ion-java from the existing commit.
         uses: actions/checkout@v2
         with:
-          fetch-depth: 2
           submodules: recursive
       - run: git checkout HEAD^
       - run: pwd
@@ -33,3 +32,4 @@ jobs:
           ref: test-linls
       - run: pwd
       - run: ls
+      - run: git checkout HEAD^
