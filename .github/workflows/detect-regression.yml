@@ -10,8 +10,8 @@ on:
     branches: [ regression-test ]
 
 jobs:
-  detetct-regression:
-    name: Detetct Regression
+  detect-regression:
+    name: Detect Regression
 
     runs-on: ubuntu-latest
 
