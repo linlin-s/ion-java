@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-      - run: git checkout HEAD^
       - run: pwd
       - run: ls
       - name: Checkout ion-java-benchmark-cli
