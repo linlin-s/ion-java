@@ -25,3 +25,11 @@ jobs:
           submodules: recursive
       - run: git checkout HEAD^
       - run: pwd
+      - run: ls
+      - name: Checkout ion-java-benchmark-cli
+        uses: actions/checkout@v2
+        with:
+          repository: linlin-s/ion-java-benchmark-cli
+          ref: test-linls
+      - run: pwd
+      - run: ls
