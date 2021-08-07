@@ -30,5 +30,7 @@ jobs:
           repository: linlin-s/ion-java-benchmark-cli
           ref: test-linls
       - run: pwd
+      - run: cd ..
+      - run: pwd
       - run: ls
       - run: git checkout HEAD^
