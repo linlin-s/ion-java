@@ -1,4 +1,4 @@
-name: Ion Jave performance regression detector
+name: Test
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ regression-test ]
 
 jobs:
-  detect-regression:
+  test:
     name: Test repo
 
     runs-on: ubuntu-latest
@@ -22,14 +22,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
-      - run: cd .. && pwd && ls
+          path: ion-java
+      - run: cd .. && pwd
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
           repository: linlin-s/ion-java-benchmark-cli
           ref: test-linls
-      - run: pwd
-      - run: cd ..
-      - run: pwd
-      - run: ls
-      - run: git checkout HEAD^
+          path: ion-java-benchmark-cli
+          
+      - run: cd .. && pwd
+
+ 
