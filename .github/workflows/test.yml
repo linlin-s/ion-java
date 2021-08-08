@@ -32,5 +32,8 @@ jobs:
           path: ion-java-benchmark-cli
           
       - run: pwd && ls
+      - run: |
+            cd ion-java
+            git checkout HEAD^
 
  
