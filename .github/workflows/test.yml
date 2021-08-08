@@ -23,7 +23,7 @@ jobs:
         with:
           submodules: recursive
           path: ion-java
-      - run: cd .. && pwd && ls
+      - run: pwd && ls
       - run: mkdir -p ion-java-benchmark-cli
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
