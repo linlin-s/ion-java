@@ -60,7 +60,7 @@ jobs:
       - name: Benchmark ion-java from the existing commit
         run: |
           mkdir -p benchmarkResults
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data testData --benchmark-options-combinations ion-java-benchmark-cli/tst/com/amazon/ion/benchmark/optionsCombinations.ion benchmarkResults
+          cd ion-java-benchmark-cli && java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations tst/com/amazon/ion/benchmark/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
       - name: Upload benchmark results to artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -68,24 +68,16 @@ jobs:
           path: benchmarkResults
 
       - name: Clean maven dependency repository
-        run : cd /home/runner && ls && rm -r /home/runner/.m2
+        run : cd /home/runner/.m2 && ls && rm -r /home/runner/.m2
 
-      - name: Checkout ion-java repository from the new commit
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
+
 
       - name: Build ion-java from the new commit
-        run: mvn clean install
+        run: cd ion-java && git checkout HEAD^ && mvn clean install
 
-      - name: Checkout ion-java-benchmark-cli
-        uses: actions/checkout@v2
-        with:
-          repository: linlin-s/ion-java-benchmark-cli
-          ref: test-linls
 
       - name: Build ion-java-benchmark-cli based on the new ion-java
-        run: mvn clean install
+        run: cd ion-java-benchmark-cli && mvn clean install
 
       - name: Check the version of ion-java
         run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
