@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 2
           submodules: recursive
           path: ion-java
-      - run: cd ion-java && git checkout HEAD^
+ 
  
      
       - name: Checkout ion-java-benchmark-cli
@@ -34,4 +34,4 @@ jobs:
           ref: test-linls
           path: ion-java-benchmark-cli
 
- 
+      - run: cd ion-java && git checkout HEAD^
