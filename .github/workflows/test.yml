@@ -21,19 +21,17 @@ jobs:
       - name: Checkout the ion-java from the existing commit.
         uses: actions/checkout@v2
         with:
+          fetch-depth: 2
           submodules: recursive
           path: ion-java
+      - run: cd ion-java && git checkout HEAD^
  
-      - run: pwd && ls
+     
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
           repository: linlin-s/ion-java-benchmark-cli
           ref: test-linls
           path: ion-java-benchmark-cli
-          
-      - run: pwd && ls
-      - run: cd /home/runner/work/ion-java/ion-java/ion-java && ls 
-      - run: pwd && git checkout HEAD^
 
  
