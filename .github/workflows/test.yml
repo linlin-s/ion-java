@@ -32,6 +32,6 @@ jobs:
           ref: test-linls
           path: ion-java-benchmark-cli
           
-      - run: cd .. && pwd && ls
+      - run: pwd && ls
 
  
