@@ -21,17 +21,16 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Checkout the ion-java from the existing commit.
+      - name: Checkout the ion-java from the new commit.
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
           submodules: recursive
           path: ion-java
 
-
-      - name: Build ion-java based on the existing commit
+      - name: Build ion-java based on the new commit
         run: cd ion-java && mvn clean install
-      - run: cd .. && pwd
+        
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
@@ -40,10 +39,10 @@ jobs:
           path: ion-java-benchmark-cli
 
       - name: Build ion-java-benchmark-cli based on the current ion-java
-        run: mvn clean install
+        run: cd ion-java-benchmark-cli && mvn clean install
 
       - name: Check the version of ion-java.
-        run: java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
+        run: cd ion-java-benchmark-cli && java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
 
       - name: Generate test Ion Data
         run: |
@@ -51,6 +50,7 @@ jobs:
           java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testStruct.isl /home/runner/work/ion-java/ion-java/testData/testStruct.10n
           java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testList.isl /home/runner/work/ion-java/ion-java/testData/testList.10n
           java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testNestedStruct.isl /home/runner/work/ion-java/ion-java/testData/testNestedStruct.10n
+      
       - name: Upload test Ion Data to artifact
         uses: actions/upload-artifact@v2
         with:
