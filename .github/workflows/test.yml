@@ -23,7 +23,7 @@ jobs:
         with:
           submodules: recursive
           path: ion-java
-      - run: git checkout HEAD^
+ 
       - run: pwd && ls
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
@@ -33,6 +33,7 @@ jobs:
           path: ion-java-benchmark-cli
           
       - run: pwd && ls
-      - run: cd /home/runner/work/ion-java/ion-java/ion-java && ls && git checkout HEAD^
+      - run: cd /home/runner/work/ion-java/ion-java/ion-java && ls 
+      - run: git checkout HEAD^
 
  
