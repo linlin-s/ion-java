@@ -47,9 +47,9 @@ jobs:
       - name: Generate test Ion Data
         run: |
           mkdir -p testData
-          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testStruct.isl /home/runner/work/ion-java/ion-java/testData/testStruct.10n
-          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testList.isl /home/runner/work/ion-java/ion-java/testData/testList.10n
-          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/testNestedStruct.isl /home/runner/work/ion-java/ion-java/testData/testNestedStruct.10n
+          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/benchmark/testStruct.isl /home/runner/work/ion-java/ion-java/testData/testStruct.10n
+          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/benchmark/testList.isl /home/runner/work/ion-java/ion-java/testData/testList.10n
+          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/benchmark/testNestedStruct.isl /home/runner/work/ion-java/ion-java/testData/testNestedStruct.10n
       
       - name: Upload test Ion Data to artifact
         uses: actions/upload-artifact@v2
@@ -60,7 +60,7 @@ jobs:
       - name: Benchmark ion-java from the existing commit
         run: |
           mkdir -p benchmarkResults
-          java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations /home/runner/work/ion-java/ion-java/tst/com/amazon/ion/benchmark/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
+          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data testData --benchmark-options-combinations ion-java-benchmark-cli/tst/com/amazon/ion/benchmark/optionsCombinations.ion benchmarkResults
       - name: Upload benchmark results to artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -68,7 +68,7 @@ jobs:
           path: benchmarkResults
 
       - name: Clean maven dependency repository
-        run : rm -r /home/runner/.m2
+        run : cd /home/runner && ls && rm -r /home/runner/.m2
 
       - name: Checkout ion-java repository from the new commit
         uses: actions/checkout@v2
