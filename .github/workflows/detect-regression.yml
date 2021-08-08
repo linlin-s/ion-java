@@ -26,16 +26,18 @@ jobs:
         with:
           fetch-depth: 2
           submodules: recursive
-      - run: git checkout HEAD^
+          path: ion-java
+
 
       - name: Build ion-java based on the existing commit
-        run: mvn clean install
-
+        run: cd ion-java && mvn clean install
+      - run: cd .. && pwd
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
           repository: linlin-s/ion-java-benchmark-cli
           ref: test-linls
+          path: ion-java-benchmark-cli
 
       - name: Build ion-java-benchmark-cli based on the current ion-java
         run: mvn clean install
