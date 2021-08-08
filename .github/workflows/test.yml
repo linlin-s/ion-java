@@ -34,6 +34,6 @@ jobs:
           
       - run: pwd && ls
       - run: cd /home/runner/work/ion-java/ion-java/ion-java && ls 
-      - run: git checkout HEAD^
+      - run: pwd && git checkout HEAD^
 
  
