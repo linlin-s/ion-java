@@ -34,8 +34,8 @@ jobs:
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
-          repository: amzn/ion-java-benchmark-cli
-          ref: master
+          repository: linls/ion-java-benchmark-cli
+          ref: swap
           path: ion-java-benchmark-cli
 
       - name: Build ion-java-benchmark-cli
@@ -112,7 +112,7 @@ jobs:
           cd benchmarkResults
           ls
           result=true
-          for FILE in *; do message=$(java -jar /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion --threshold /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/tst/com/amazon/ion/benchmark/threshold.ion $FILE/report.ion | tee /dev/stderr) && if [ "$message" != "" ]; then result=false;fi; done
+          for FILE in *; do message=$(java -jar /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion | tee /dev/stderr) && if [ "$message" != "" ]; then result=false;fi; done
           echo "::set-output name=regression-result::$result"
           echo $result
           
