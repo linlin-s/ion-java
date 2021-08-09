@@ -78,7 +78,7 @@ jobs:
         run: cd ion-java-benchmark-cli && mvn clean install
 
       - name: Check the version of ion-java
-        run: java -jar ion-java-benchamrk-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
+        run: java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
 
       - name: Create directories for test data and benchmark results
         run: |
