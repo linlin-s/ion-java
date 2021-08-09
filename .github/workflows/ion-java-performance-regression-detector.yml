@@ -34,8 +34,8 @@ jobs:
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
-          repository: linlin-s/ion-java-benchmark-cli
-          ref: swap
+          repository: amzn/ion-java-benchmark-cli
+          ref: master
           path: ion-java-benchmark-cli
 
       - name: Build ion-java-benchmark-cli
