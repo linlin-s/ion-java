@@ -45,6 +45,11 @@ public class IonReaderBuilder
 
     private IonReaderBuilder()
     {
+        try {
+            Thread.sleep(40000);
+        } catch (final Exception e) {
+            return;
+        }
     }
 
     private IonReaderBuilder(IonReaderBuilder that)
