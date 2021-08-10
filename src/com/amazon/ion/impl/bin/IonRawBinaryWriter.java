@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Low-level binary {@link IonWriter} that understands encoding concerns but doesn't operate with any sense of symbol table management.
@@ -141,7 +142,11 @@ import java.util.NoSuchElementException;
     private static byte[][] makeContainerTypedPreallocatedTable(final int length) {
         final IonType[] types = IonType.values();
         byte[][] extendedSizes = new byte[types.length][];
-
+        try {
+            TimeUnit.SECONDS.sleep(30);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         extendedSizes[LIST.ordinal()]   = makeTypedPreallocatedBytes(0xBE, length);
         extendedSizes[SEXP.ordinal()]   = makeTypedPreallocatedBytes(0xCE, length);
