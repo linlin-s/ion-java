@@ -6,7 +6,7 @@ on:
 
 jobs:
   ion-java-auto-release:
-    name: Detect Regression
+    name: ion-java-auto-release
 
     runs-on: ubuntu-latest
 
