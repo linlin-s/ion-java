@@ -5,7 +5,7 @@ on:
     branches: [ test ]
 
 jobs:
-  detect-regression:
+  ion-java-auto-release:
     name: Detect Regression
 
     runs-on: ubuntu-latest
