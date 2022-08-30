@@ -1,7 +1,7 @@
 name: Ion Java automatically release to Maven Central
 
 on: 
-  pull_request:
+  push:
     branches: [ test ]
 
 jobs:
