@@ -16,7 +16,7 @@ jobs:
         with:
           java-version: 1.8
           
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v1
         with:
          repository: amzn/ion-java
          
