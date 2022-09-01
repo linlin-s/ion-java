@@ -16,11 +16,10 @@ jobs:
         with:
           java-version: 1.8
           
-      - name: Check the current repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
-          path: current
-          
+         repository: amzn/ion-java
+         
       - name: Check the previous release
         id: last_release
         uses: InsonusK/get-latest-release@v1.0.1
