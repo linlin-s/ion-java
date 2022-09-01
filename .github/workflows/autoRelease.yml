@@ -16,20 +16,15 @@ jobs:
         with:
           java-version: 1.8
           
-      - uses: actions/checkout@v1
-        with:
-         repository: amzn/ion-java
-         
       - name: Check the previous release
-        id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
+        uses: oprypin/find-latest-tag@v1
+        id: checkrelease 
         with:
-          exclude_types: "release"
-          view_top: 1
-          path: last_release
-          
+          repository: amzn/ion-java
+          releases-only: true 
+
       - name: Git commit ID of these two versions
         run: |
-         echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
+         echo "Octokit is at version ${{ steps.checkrelease.outputs.tag }}"
 
     
