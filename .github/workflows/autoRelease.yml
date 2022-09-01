@@ -28,10 +28,11 @@ jobs:
         with:
           repository: amzn/ion-java
           path: current_release
-      
-      - run: |
+          
+      - name: Get the commit id of the current release
+        run: |
          cd current_release
-         echo "A=$(git rev-parse HEAD)" >> $GITHUB_ENV
+         echo "current_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Checkout the last relase's commit id
         uses: actions/checkout@v3
@@ -39,7 +40,12 @@ jobs:
           repository: amzn/ion-java
           ref: ${{ steps.check_last_release.outputs.tag }}
           path: last_release
-          
+              
+      - name: Get the commit id of the last release
+        run: |
+         cd last_release
+         echo "last_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
       - name: Check whether the current release is fast-forward compared to the last one
-        run: echo "${{ env.A }}" 
-    
+        run: |
+          echo "${{ env.current_release_commit_id }}" 
+          echo "${{ env.last_release_commit_id }}" 
