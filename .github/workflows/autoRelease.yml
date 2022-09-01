@@ -15,5 +15,22 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+          
+      - name: Check the current repo
+        uses: actions/checkout@v3
+        with:
+          path: current
+          
+      - name: Check the previous release
+        id: last_release
+        uses: InsonusK/get-latest-release@v1.0.1
+        with:
+          exclude_types: "release"
+          view_top: 1
+          path: last_release
+          
+      - name: Git commit ID of these two versions
+        run: |
+         echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
 
     
