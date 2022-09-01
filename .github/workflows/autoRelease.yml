@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+    
       - name: Check the previous release
         uses: oprypin/find-latest-tag@v1
         id: check_last_release 
@@ -26,7 +32,7 @@ jobs:
           
       - name: Get the commit id of the current release
         run: |
-         cd current_release && git merge-base --is-ancestor "a90e7ca" "b885cbc" && status=$?
+         cd current_release && git merge-base --is-ancestor a90e7ca b885cbc && status=$?
          echo $status
 
 
