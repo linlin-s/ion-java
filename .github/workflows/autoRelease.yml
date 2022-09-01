@@ -18,7 +18,7 @@ jobs:
           
       - name: Check the previous release
         uses: oprypin/find-latest-tag@v1
-        id: checkrelease 
+        id: check_last_release 
         with:
           repository: amzn/ion-java
           releases-only: true 
@@ -27,4 +27,20 @@ jobs:
         run: |
          echo "Octokit is at version ${{ steps.checkrelease.outputs.tag }}"
 
+      - name: Checkout the current commit id
+        uses: actions/checkout@v3
+        with:
+          repository: amzn/ion-java
+          path: current_release
+          
+      - name: Checkout the last relase's commit id
+        uses: actions/checkout@v3
+        with:
+          repository: amzn/ion-java
+          ref: ${{ steps.check_last_release.outputs.tag }}
+          path: last_release
+          
+      - name: Check whether the current release is fast-forward compared to the last one
+        run: |
+          cd current_release && echo $(git rev-parse HEAD)
     
