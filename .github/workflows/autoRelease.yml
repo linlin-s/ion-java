@@ -23,19 +23,15 @@ jobs:
           repository: amzn/ion-java
           releases-only: true 
 
-      - name: Git commit ID of these two versions
-        run: |
-         echo "Octokit is at version ${{ steps.checkrelease.outputs.tag }}"
-
       - name: Checkout the current commit id
         uses: actions/checkout@v3
         with:
           repository: amzn/ion-java
           path: current_release
       
-      - run: cd current_release 
-        env:
-          current_commit: $(git rev-parse HEAD)
+      - run: |
+         cd current_release
+         echo "A=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Checkout the last relase's commit id
         uses: actions/checkout@v3
@@ -45,5 +41,5 @@ jobs:
           path: last_release
           
       - name: Check whether the current release is fast-forward compared to the last one
-        run: echo $current_commit
+        run: echo "${{ env.A }}" 
     
