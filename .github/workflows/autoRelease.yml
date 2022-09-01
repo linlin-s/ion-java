@@ -32,7 +32,11 @@ jobs:
         with:
           repository: amzn/ion-java
           path: current_release
-          
+      
+      - run: cd current_release 
+        env:
+          current_commit: $(git rev-parse HEAD)
+
       - name: Checkout the last relase's commit id
         uses: actions/checkout@v3
         with:
@@ -41,7 +45,5 @@ jobs:
           path: last_release
           
       - name: Check whether the current release is fast-forward compared to the last one
-        run: |
-          cd current_release && echo $(git rev-parse HEAD)
-          cd last_release && echo $(git rev-parse HEAD)
+        run: echo $current_commit
     
