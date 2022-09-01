@@ -43,4 +43,5 @@ jobs:
       - name: Check whether the current release is fast-forward compared to the last one
         run: |
           cd current_release && echo $(git rev-parse HEAD)
+          cd last_release && echo $(git rev-parse HEAD)
     
