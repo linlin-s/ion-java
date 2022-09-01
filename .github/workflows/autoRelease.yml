@@ -26,8 +26,7 @@ jobs:
           
       - name: Get the commit id of the current release
         run: |
-         cd current_release
-         git merge-base --is-ancestor a90e7ca b885cbc && status=$?
+         cd current_release && git merge-base --is-ancestor "a90e7ca" "b885cbc" && status=$?
          echo $status
 
 
