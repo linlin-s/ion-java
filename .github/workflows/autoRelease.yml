@@ -28,6 +28,7 @@ jobs:
         run: |
          cd current_release
          echo "current_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
+         if git merge-base --is-ancestor a90e7ca b885cbc; then echo "yes"; else echo "no";fi
 
       - name: Checkout the last relase's commit id
         uses: actions/checkout@v3
@@ -41,9 +42,6 @@ jobs:
          cd last_release
          echo "last_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
          
-      - name: Get the commit id of the current release
-        run: |
-         cd current_release
-         echo "current_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
-         if git merge-base --is-ancestor a90e7ca b885cbc; then echo "yes"; else echo "no";fi
+
+         
 
