@@ -27,7 +27,8 @@ jobs:
       - name: Get the commit id of the current release
         run: |
          cd current_release
-         if git merge-base --is-ancestor a90e7ca b885cbc; then echo "yes"; else echo "no";fi
+         git merge-base --is-ancestor a90e7ca b885cbc && status=$?
+         echo $status
 
 
       - name: Checkout the last relase's commit id
