@@ -47,5 +47,5 @@ jobs:
          echo "last_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
          
       - name: Check whether the current release is fast-forward compared to the last one
-        run: if git merge-base --is-ancestor ${{ env.last_release_commit_id }} ${{ env.current_release_commit_id }}; then echo "yes"; else echo "no";fi
+        run: cd current_release && if git merge-base --is-ancestor ${{ env.last_release_commit_id }} ${{ env.current_release_commit_id }}; then echo "yes"; else echo "no";fi
 
