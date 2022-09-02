@@ -25,7 +25,8 @@ jobs:
           
       - name: Upload the executable jar to artifacts
         run: |
-          echo "a=$(find /current_release/target/ -name \*.jar)"  >> $GITHUB_ENV
+          cd current_release/target
+          echo "a=$(ls *.jar | grep -v SNAPSHOT.jar)"  >> $GITHUB_ENV
           
       - name: Upload the executable jar to artifacts
         uses: actions/upload-artifact@v2
