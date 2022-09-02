@@ -45,7 +45,7 @@ jobs:
         run: |
          cd current_release 
          git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}} 
-         echo "result=$?" >> $ GITHUB_ENV
+         echo $?
          
       - run: echo ${{env.result}}
     
