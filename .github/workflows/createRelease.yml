@@ -34,5 +34,13 @@ jobs:
           name: asset.jar
           path: ${{ env.path }}
           
+      - name: Create new release
+        id: create_new_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v1.9.6SNAPSHOT
+          release_name: ion-java-test-release
+          
+          
           
      
