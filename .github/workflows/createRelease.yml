@@ -19,6 +19,7 @@ jobs:
       - name: Build ion-java
         run: |
           cd current_release
+          git submodule update --recursive
           mvn clean install
           
       - name: Upload the executable jar to artifacts
