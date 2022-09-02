@@ -46,7 +46,7 @@ jobs:
          cd current_release 
          git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}} 
          a=$?
-         if [$a == 0]; then echo "it is"; else echo "no";fi
+         echo $a
          
     
 
