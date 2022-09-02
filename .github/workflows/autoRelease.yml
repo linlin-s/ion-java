@@ -26,7 +26,7 @@ jobs:
           
       - name: Get the commit id of the current release
         run: |
-         cd current_release && git merge-base --is-ancestor a90e7ca b885cbc
+         cd current_release && git merge-base --is-ancestor b885cbc b885cbc
 
 
 
