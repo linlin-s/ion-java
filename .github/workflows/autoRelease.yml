@@ -23,13 +23,11 @@ jobs:
         with:
           repository: amzn/ion-java
           path: current_release
+          fetch-depth: 0
+      - run: |
+          cd current_release
+          echo "current_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
           
-      - name: Get the commit id of the current release
-        run: |
-         cd current_release && git merge-base --is-ancestor b885cbc b885cbc
-
-
-
       - name: Checkout the last relase's commit id
         uses: actions/checkout@v3
         with:
@@ -42,5 +40,7 @@ jobs:
          cd last_release
          echo "last_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
          
-      
+      - name: Check whether fast-forward
+        run: |
+         cd current_release && git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}} && echo $?
 
