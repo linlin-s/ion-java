@@ -44,9 +44,8 @@ jobs:
       - name: Check whether the incoming release is fast-forward compared to the last release
         run: |
          cd current_release 
-         git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}} 
-         a=$?
-         echo $a
+         if merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi 
+ 
          
     
 
