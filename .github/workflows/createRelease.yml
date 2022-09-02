@@ -1,0 +1,34 @@
+name: Create Release after fast-forward check
+on: 
+  push:
+    branches: [ test ]
+
+jobs:
+
+  ion-java-gitHub-auto-release:
+    name: ion-java-github-auto-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Access to the incoming release
+        uses: actions/checkout@v3
+        with:
+          repository: amzn/ion-java
+          path: current_release
+          
+      - name: Build ion-java
+        run: |
+          cd current_release
+          mvn clean install
+          
+      - name: Upload the executable jar to artifacts
+        run: |
+          name=$(find /current_release/target/ -name \*.jar)
+          echo $name
+        uses: actions/upload-artifact@v2
+        with:
+          name: asset.jar
+          path: current_release/target/$name
+          
+          
+     
