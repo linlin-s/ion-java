@@ -1,5 +1,4 @@
-name: Ion Java GitHub Automatically Release
-
+name: Fast-forward checking before release
 on: 
   push:
     branches: [ test ]
