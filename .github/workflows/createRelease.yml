@@ -42,6 +42,11 @@ jobs:
         with:
           tag_name: v1.9.7SNAPSHOT
           release_name: ion-java-test-release-01
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: asset.jar
+          path: asset
           
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
@@ -49,8 +54,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           upload_url: ${{ steps.create_new_release.outputs.upload_url }}
-          asset_path: ./asset.jar 
-          asset_name: new_release.jar
+          asset_path: ./asset
+          asset_name: asset.jar
           asset_content_type: application/jar 
 
           
