@@ -43,6 +43,17 @@ jobs:
           tag_name: v1.9.6SNAPSHOT
           release_name: ion-java-test-release
           
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        with:
+          upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+          asset_path: ./asset.jar 
+          asset_name: new_release.jar
+          asset_content_type: application/jar 
+
+          
           
           
      
