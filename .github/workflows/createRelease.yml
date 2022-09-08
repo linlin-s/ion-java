@@ -27,6 +27,8 @@ jobs:
         run: |
           cd current_release/target
           echo "path=$(readlink -f $(ls *.jar))" >> $GITHUB_ENV
+          echo "version_number=$(echo $(ls *.jar) | cut -d'-' -f3)" >> $GITHUB_ENV
+
           
       - name: Create new release
         id: create_new_release
@@ -34,8 +36,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
-          tag_name: v1.9.7SNAPSHOT
-          release_name: ion-java-test-release-01
+          tag_name: v${{ env.version_number }}
+          release_name: v${{ env.version_number }}
   
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
