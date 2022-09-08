@@ -54,9 +54,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           upload_url: ${{ steps.create_new_release.outputs.upload_url }}
-          asset_path: /home/runner/work/ion-java/ion-java/asset/asset.jar
+          asset_path: /home/runner/work/ion-java/ion-java/asset/asset.jar.zip
           asset_name: asset.jar
-          asset_content_type: application/jar 
+          asset_content_type: application/zip
 
           
           
