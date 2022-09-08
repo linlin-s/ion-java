@@ -46,21 +46,16 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: asset.jar
-      - name: Archive content
-        uses: thedoctor0/zip-release@master
-        with:
-          filename: asset.jar
           
-      - run: |
-          cd asset
-          ls
+      - run: ls
+      
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           upload_url: ${{ steps.create_new_release.outputs.upload_url }}
-          asset_path: /home/runner/work/ion-java/ion-java/asset.jar
+          asset_path: ./asset.jar
           asset_name: asset.jar
           asset_content_type: application/zip
 
