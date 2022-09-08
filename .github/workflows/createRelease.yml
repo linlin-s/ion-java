@@ -55,7 +55,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         with:
           upload_url: ${{ steps.create_new_release.outputs.upload_url }}
-          asset_path: ./asset.jar
+          asset_path: ${{ env.path }}
           asset_name: asset.jar
           asset_content_type: application/zip
 
