@@ -1,0 +1,48 @@
+name: Fast-forward checking before release
+on: [pull_request]
+
+
+jobs:
+  ion-java-gitHub-auto-release:
+    name: ion-java-github-auto-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Access to the last release
+        uses: oprypin/find-latest-tag@v1
+        id: check_last_release
+        with:
+          repository: amzn/ion-java
+          releases-only: true
+
+      - name: Checkout the last release
+        uses: actions/checkout@v3
+        with:
+          repository: amzn/ion-java
+          ref: ${{ steps.check_last_release.outputs.tag }}
+          path: last_release
+
+      - name: Get the commit id of the last release
+        run: |
+          cd last_release
+          echo "last_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Access to the incoming release
+        uses: actions/checkout@v3
+        with:
+          repository: linlin-s/ion-java
+          path: current_release
+          fetch-depth: 2
+          submodule: recursive
+
+
+      - name: Get the commit id of the incoming release
+        run: |
+          cd current_release
+          echo "current_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo $(git rev-parse HEAD)
+
+      - name: Check whether the incoming release is fast-forward compared to the last release
+        run: |
+          cd current_release 
+          if git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi 
