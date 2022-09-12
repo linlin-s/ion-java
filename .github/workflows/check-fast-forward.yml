@@ -35,7 +35,8 @@ jobs:
       - name: Checkout PR
         uses: dawidd6/action-checkout-pr@v1
         with:
-          pr: 1
+          pr: 6
+
 
       - name: Get the commit id of the incoming release
         run: |
