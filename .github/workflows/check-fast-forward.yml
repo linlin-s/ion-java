@@ -1,5 +1,8 @@
 name: Fast-forward checking before release
-on: [pull_request]
+on:
+  pull_request:
+    types:
+      -opened
 
 
 jobs:
@@ -35,7 +38,7 @@ jobs:
       - name: Checkout PR
         uses: dawidd6/action-checkout-pr@v1
         with:
-          pr: 6
+          pr: $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
 
 
       - name: Get the commit id of the incoming release
