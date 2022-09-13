@@ -72,7 +72,7 @@ jobs:
       - name: Checkout the current repository
         uses: actions/checkout@v3
         with:
-          repository: amzn/ion-java
+          repository: linlin-s/ion-java
           path: ion-java
 
       - name: Build ion-java from the previous commit
