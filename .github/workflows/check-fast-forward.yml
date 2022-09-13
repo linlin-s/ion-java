@@ -35,7 +35,7 @@ jobs:
       - name: Checkout PR
         uses: dawidd6/action-checkout-pr@v1
         with:
-          pr: $(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          pr: ${{ github.event.number }}
 
 
       - name: Get the commit id of the incoming release

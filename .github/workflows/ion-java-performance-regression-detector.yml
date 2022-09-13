@@ -17,12 +17,17 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Checkout ion-java from the new commit.
+      - name: Checkout ion-java repository.
         uses: actions/checkout@v2
         with:
-          fetch-depth: 2
           submodules: recursive
           path: ion-java
+
+      - name: Get the PR
+        uses: dawidd6/action-checkout-pr@v1
+        with:
+          pr: ${{ github.event.number }}
+
 
       - name: Build ion-java from the new commit
         run: cd ion-java && mvn clean install
