@@ -23,7 +23,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           path: ion-java-new
 
-      - run: cd ion-jav-new && git log
+      - run: cd ion-java-new && git log
 
       - name: Build ion-java from the new commit
         run:  cd ion-java-new && git submodule init && git submodule update && mvn install
