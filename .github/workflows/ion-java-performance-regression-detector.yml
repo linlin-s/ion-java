@@ -3,11 +3,11 @@
 
 name: Ion Java performance regression detector
 
-on: [pull_request, push]
+on: [pull_request]
 
 jobs:
-  detect-regression:
-    name: Detect Regression
+  check-commit:
+    name: Checkout commit
 
     runs-on: ubuntu-latest
 
@@ -20,12 +20,8 @@ jobs:
       - name: Checkout ion-java repository.
         uses: actions/checkout@v3
         with:
-          repository: linlin-s/ion-java
+          ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Get PR
-        uses: dawidd6/action-checkout-pr@v1
-        with:
-          pr: ${{ github.event.number }}
       - run: git log
 
       - name: Build ion-java from the new commit
@@ -72,11 +68,11 @@ jobs:
       - name: Checkout the current repository
         uses: actions/checkout@v3
         with:
-          repository: linlin-s/ion-java
+          repository: amzn/ion-java
           path: ion-java
 
       - name: Build ion-java from the previous commit
-        run: cd ion-java && git checkout HEAD^ && git submodule update --recursive && mvn clean install
+        run: cd ion-java &&  git submodule update --recursive && mvn clean install
 
       - name: Build ion-java-benchmark-cli
         run: cd ion-java-benchmark-cli && mvn clean install
