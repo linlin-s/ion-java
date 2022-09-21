@@ -3,6 +3,28 @@ on: [pull_request]
 
 
 jobs:
+  check-version-changes:
+    name: check-version-changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Switch to the branch of in-coming pull request
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: ion-java-new
+
+      - name: Check if the in-coming commit contains version number changes
+        run: |
+          cd ion-java-new
+          commitID=$(git rev-parse HEAD)
+          echo $commitID
+          readmeChange=$(git show $commitID -- ./README.md)
+          pomChange=$(git show $commitID -- ./pom.xml)
+          echo $readmeChange
+          echo $pomChange
+          if [[ $readmeChange != "" && $readmeChange =~ ."<versions>"."</version>".* ]] && [[ $pomChange != "" && $pomChange =~ ."<versions>"."</version>".* ]]; then echo "version bump check pass"; else exit 1; fi 
+
+
   ion-java-gitHub-auto-release:
     name: ion-java-github-auto-release
     runs-on: ubuntu-latest
