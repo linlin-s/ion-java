@@ -16,6 +16,8 @@ jobs:
       - name: Checkout the current repository
         uses: actions/checkout@v3
         with:
+          repository: linlin-s/ion-java
+          ref: master
           path: ion-java-current
 
       - name: Check if the in-coming commit contains version number changes compare to the current HEAD commit
@@ -26,6 +28,7 @@ jobs:
           echo $version
           cd .. && cd ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
 
   ion-java-gitHub-auto-release:
