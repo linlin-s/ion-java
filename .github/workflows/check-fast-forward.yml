@@ -26,10 +26,25 @@ jobs:
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           commitID=$(git rev-parse HEAD)
           echo $version
-          cd .. && cd ion-java-current
+          cd  /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
+
+  comment-pull-request:
+    needs: check-version-changes
+    name: Comment pull request when no version bump include
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            **Hello**
+            🌏
+            !
+
+
 
   ion-java-gitHub-auto-release:
     needs: check-version-changes
