@@ -54,7 +54,7 @@ jobs:
         uses: oprypin/find-latest-tag@v1
         id: check_last_release
         with:
-          repository: amzn/ion-java
+          repository: linlin-s/ion-java
           releases-only: true
 
       - name: Checkout the last release
