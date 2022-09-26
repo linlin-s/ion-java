@@ -37,18 +37,17 @@ jobs:
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
-      - uses: mshick/add-pr-comment@v1
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v2
         with:
-          message: |
-            **Hello**
-            🌏
-            !
-
-
+          issue-number: ${{ github.event.pull_request.head.sha }}
+          body: |
+            This PR doesn't contain version number bump and will not trigger ion-java auto release process.
 
   ion-java-gitHub-auto-release:
     needs: check-version-changes
     name: ion-java-github-auto-release
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
       - name: Access to the last release
