@@ -44,9 +44,9 @@ jobs:
           body: |
             This PR doesn't contain version number bump and will not trigger ion-java auto release process.
 
-  ion-java-gitHub-auto-release:
+  fast-forward-check:
     needs: check-version-changes
-    name: ion-java-github-auto-release
+    name: fast-forward-check
     if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
@@ -72,16 +72,12 @@ jobs:
       - name: Access to the incoming release
         uses: actions/checkout@v3
         with:
-          repository: linlin-s/ion-java
-
-      - name: Checkout PR
-        uses: dawidd6/action-checkout-pr@v1
-        with:
-          pr: ${{ github.event.number }}
-
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: ion-java-new
 
       - name: Get the commit id of the incoming release
         run: |
+          cd ion-java-new
           echo "current_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
           echo $(git rev-parse HEAD)
 
@@ -92,8 +88,9 @@ jobs:
 
   GitHub-draft-release:
     name: GitHub-draft-release
+    needs: fast-forward-check
+    if: ${{ success() }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Access to the incoming release
         uses: actions/checkout@v3
