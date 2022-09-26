@@ -25,7 +25,7 @@ jobs:
           cd ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           commitID=$(git rev-parse HEAD)
-          echo $version
+          echo $versionNew
           cd  /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo $versionCurrent
