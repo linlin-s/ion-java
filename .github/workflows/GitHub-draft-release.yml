@@ -6,7 +6,6 @@ on:
 
 jobs:
   ion-java-gitHub-auto-release:
-    if: github.event.pull_request.merged == true
     name: ion-java-github-auto-release
     runs-on: ubuntu-latest
 
