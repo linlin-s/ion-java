@@ -1,0 +1,53 @@
+name: Create Release after fast-forward check
+on:
+  workflow_run:
+    workflows: [ "Fast-forward checking before release" ]
+    types:
+      - completed
+
+jobs:
+  ion-java-gitHub-auto-release:
+    name: ion-java-github-auto-release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Access to the incoming release
+        uses: actions/checkout@v3
+        with:
+          repository: amzn/ion-java
+          path: current_release
+
+      - name: Build ion-java
+        run: |
+          cd current_release
+          git submodule init
+          git submodule update
+          mvn clean install
+
+      - name: Upload the executable jar to artifacts
+        run: |
+          cd current_release/target
+          echo "path=$(readlink -f $(ls *.jar))" >> $GITHUB_ENV
+          echo "file_name=$(ls *.jar)" >> $GITHUB_ENV
+          echo "version_number=$(echo $(ls *.jar) | cut -d'-' -f3)" >> $GITHUB_ENV
+
+  create-tag-and-release-draft:
+    runs-on: ubuntu-latest
+    needs: ion-java-gitHub-auto-release
+    steps:
+      - uses: actions/checkout@v3
+      - uses: rickstaa/action-create-tag@v1
+        with:
+          tag: v${{ mvn help:evaluate -Dexpression=project.version -q -DforceStdout }}
+          message: v${{ mvn help:evaluate -Dexpression=project.version -q -DforceStdout }}
+
+      - name: Create a release draft for a version tag
+        id: create-release-draft
+        uses: ecampidoglio/auto-release-draft@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print the URL of the release draft
+        if: steps.create-release-draft.outputs.release-url != ''
+        run: echo ${{ steps.create-release-draft.outputs.release-url }}
+
