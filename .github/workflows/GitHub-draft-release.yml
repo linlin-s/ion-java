@@ -1,8 +1,9 @@
 name: Create Release after fast-forward check
 on:
   workflow_run:
-    workflows: [ Fast-forward checking before release ]
-    types: [ completed ]
+    workflows: [ "Fast-forward checking before release" ]
+    types:
+      - completed
 
 jobs:
   ion-java-gitHub-auto-release:
