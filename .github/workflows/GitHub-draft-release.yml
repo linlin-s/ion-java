@@ -1,9 +1,12 @@
 name: Create Release after fast-forward check
-on: [push]
+on:
+  workflow_run:
+    workflows: [ Fast-forward checking before release ]
+    types: [ completed ]
 
 jobs:
-
   ion-java-gitHub-auto-release:
+    if: github.event.pull_request.merged == true
     name: ion-java-github-auto-release
     runs-on: ubuntu-latest
 
