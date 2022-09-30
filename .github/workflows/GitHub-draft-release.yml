@@ -4,9 +4,6 @@ on:
     workflows: [ "Fast-forward checking before release" ]
     types:
       - completed
-    branches:
-      - master
-      - test03
 
 jobs:
   ion-java-gitHub-auto-release:
