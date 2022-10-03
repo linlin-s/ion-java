@@ -85,7 +85,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            This PR passes version bump check and fast-forward check, please trigger the GitHub prerelease manually.
+            This PR passes version bump check and fast-forward check, please trigger "Create gitHub prerelease after fast-forward check" workflow manually to create prerelease.
 
       - name: comment
         if: steps.build.outputs.exit_code == 1
@@ -93,4 +93,4 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            This PR is not fast-forward compared to the last release, please doulbe check.
+            This PR is not fast-forward compared to the last release, please check.
