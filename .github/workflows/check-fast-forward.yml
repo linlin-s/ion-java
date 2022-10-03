@@ -83,3 +83,19 @@ jobs:
         run: |
           cd ion-java-new 
           if git merge-base --is-ancestor ${{env.current_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi 
+
+      - name: comment
+        if: steps.build.outputs.exit_code == 0
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            This PR passes version bump check and fast-forward check, please trigger the GitHub prerelease manually.
+
+      - name: comment
+        if: steps.build.outputs.exit_code == 1
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            This PR is not fast-forward compared to the last release, please doulbe check.
