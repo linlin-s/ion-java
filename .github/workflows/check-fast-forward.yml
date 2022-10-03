@@ -1,39 +1,37 @@
-name: Fast-forward checking before release
+name: Version-bump-and-Fast-forward-check
 on: [pull_request]
-
 
 jobs:
   check-version-changes:
-    name: check-version-changes
+    name: check-version-bump
     runs-on: ubuntu-latest
     steps:
-      - name: Switch to the branch of in-coming pull request
+      - name: Switch to the branch of the pull request
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           path: ion-java-new
 
-      - name: Checkout the current repository
+      - name: Checkout the current repository master branch
         uses: actions/checkout@v3
         with:
           repository: linlin-s/ion-java
           ref: master
           path: ion-java-current
 
-      - name: Check if the in-coming commit contains version number changes compare to the current HEAD commit
+      - name: Check whether the pull request contains version number bump
         run: |
           cd ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           commitID=$(git rev-parse HEAD)
-          echo $versionNew
-          cd  /home/runner/work/ion-java/ion-java/ion-java-current
+          cd ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
 
   comment-pull-request:
-    needs: check-version-changes
-    name: Comment pull request when no version bump include
+    needs: check-version-bump
+    name: Comment pull request if there is no version bump
     if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +40,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            This PR doesn't contain version number bump and will not trigger ion-java auto release process.
+            This PR doesn't contain version number bump and will not trigger the ion-java GitHub release process.
 
   fast-forward-check:
     needs: check-version-changes
@@ -62,11 +60,11 @@ jobs:
         with:
           repository: linlin-s/ion-java
           ref: ${{ steps.check_last_release.outputs.tag }}
-          path: last_release
+          path: last-release
 
       - name: Get the commit id of the last release
         run: |
-          cd last_release
+          cd last-release
           echo "last_release_commit_id=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Access to the incoming release
@@ -86,14 +84,3 @@ jobs:
         run: |
           cd ion-java-new 
           if git merge-base --is-ancestor ${{env.current_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi 
-
-  create-tag-and-release-draft:
-    runs-on: ubuntu-latest
-    needs: fast-forward-check
-    if: ${{ github.event.pull_request.merged == true }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: rickstaa/action-create-tag@v1
-        with:
-          tag: v${mvn help:evaluate -Dexpression=project.version -q -DforceStdout }
-          message: v${ mvn help:evaluate -Dexpression=project.version -q -DforceStdout }
