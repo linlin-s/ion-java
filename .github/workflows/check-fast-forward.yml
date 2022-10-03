@@ -2,7 +2,7 @@ name: Version-bump-and-Fast-forward-check
 on: [pull_request]
 
 jobs:
-  check-version-changes:
+  check-version-bump:
     name: check-version-bump
     runs-on: ubuntu-latest
     steps:
@@ -43,7 +43,7 @@ jobs:
             This PR doesn't contain version number bump and will not trigger the ion-java GitHub release process.
 
   fast-forward-check:
-    needs: check-version-changes
+    needs: check-version-bump
     name: fast-forward-check
     if: ${{ success() }}
     runs-on: ubuntu-latest
