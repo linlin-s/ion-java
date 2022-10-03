@@ -21,12 +21,11 @@ jobs:
 
       - name: Check whether the pull request contains version number bump
         run: |
-          cd ion-java-new
+          cd /home/runner/work/ion-java/ion-java/ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           commitID=$(git rev-parse HEAD)
-          cd ion-java-current
+          cd /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
 
   comment-pull-request:
