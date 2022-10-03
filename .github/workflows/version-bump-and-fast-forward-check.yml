@@ -1,4 +1,4 @@
-name: Version-bump-and-Fast-forward-check
+name: Version-bump-and-fast-forward-check
 on: [pull_request]
 
 jobs:
@@ -28,13 +28,8 @@ jobs:
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
 
-  comment-pull-request:
-    needs: check-version-bump
-    name: Comment pull request if there is no version bump
-    if: ${{ failure() }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create comment
+      - name: Comment pull request if there is no version bump
+        if: steps.build.outputs.exit_code == 1
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
