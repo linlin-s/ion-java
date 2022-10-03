@@ -1,13 +1,8 @@
 name: Create Release after fast-forward check
-on:
-  workflow_run:
-    workflows: ["Version-bump-and-Fast-forward-check"]
-    types:
-      - completed
+on: workflow_dispatch
 
 jobs:
   draft-release:
-    if: ${{ github.event.pull_request.merged == true }}
     name: draft-release
     runs-on: ubuntu-latest
 
