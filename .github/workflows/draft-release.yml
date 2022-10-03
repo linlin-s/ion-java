@@ -1,6 +1,10 @@
 name: Draft Release
 on: push
 
+permissions:
+  contents: read
+
+
 jobs:
   update_release_draft:
     permissions:
