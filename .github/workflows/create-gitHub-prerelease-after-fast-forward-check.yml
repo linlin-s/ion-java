@@ -1,4 +1,4 @@
-name: Create Release after fast-forward check
+name: Create gitHub prerelease after fast-forward check
 on: workflow_dispatch
 
 jobs:
