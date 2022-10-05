@@ -3,10 +3,8 @@ on: [pull_request]
 
 jobs:
   check-version-bump:
-    uses: ./.github/workflows/version-number-check.yml
-    with:
-      config-path: .github/labeler.yml
-    secrets: inherit
+    uses: ./.github/workflows/version-number-check.yml@testVersionChange
+
 
 
   comment-when-version-number-check-failed:
