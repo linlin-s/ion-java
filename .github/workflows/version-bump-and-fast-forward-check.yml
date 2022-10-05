@@ -8,7 +8,7 @@ jobs:
   fast-forward-check:
     needs: check-version-bump
     name: fast-forward-check
-    if: ${{ steps.version-check.outputs.result == "pass" }}
+    if: ${{ steps.check-version-bump.outputs.result == "pass" }}
     runs-on: ubuntu-latest
     steps:
       - name: Access to the last release
