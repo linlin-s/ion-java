@@ -3,7 +3,7 @@ on: [pull_request]
 
 jobs:
   check-version-bump:
-    uses: ./.github/workflows/version-number-check.yml@testVersionChange
+    uses: linlin-s/ion-java/.github/workflows/version-number-check.yml@testVersionChange
 
 
 
