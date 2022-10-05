@@ -7,8 +7,11 @@ jobs:
   check-version-bump:
     name: check-version-bump
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.version-check.outputs.result }}
     steps:
       - name: Switch to the branch of the pull request
+        id: version-check
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -28,4 +31,4 @@ jobs:
           commitID=$(git rev-parse HEAD)
           cd /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
+          if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi 

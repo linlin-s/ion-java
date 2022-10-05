@@ -5,25 +5,10 @@ jobs:
   check-version-bump:
     uses: linlin-s/ion-java/.github/workflows/version-number-check.yml@testVersionChange
 
-
-
-  comment-when-version-number-check-failed:
-    needs: check-version-bump
-    if: ${{ failure() }}
-    runs-on: ubuntu-latest
-    name: comment-when-version-number-check-failed
-    steps:
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            This PR doesn't contain version number bump and will not trigger the ion-java GitHub release process.
-
   fast-forward-check:
     needs: check-version-bump
     name: fast-forward-check
-    if: ${{ success() }}
+    if: ${{ steps.version-check.outputs.result == "pass" }}
     runs-on: ubuntu-latest
     steps:
       - name: Access to the last release
