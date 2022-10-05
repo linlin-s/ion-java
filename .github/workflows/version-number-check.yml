@@ -28,7 +28,9 @@ jobs:
         run: |
           cd /home/runner/work/ion-java/ion-java/ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionNew
           commitID=$(git rev-parse HEAD)
           cd /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi 
