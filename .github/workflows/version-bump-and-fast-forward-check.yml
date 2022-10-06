@@ -9,7 +9,7 @@ jobs:
     needs: check-version-bump
     name: fast-forward-check
     runs-on: [ubuntu-latest, "${{ needs.check-version-bump.outputs.output1 }}"]
-    if: ${{ needs.check-version-bump.outputs.output1 == 'failed' }}
+    if: ${{ needs.check-version-bump.outputs.output1 == 'pass' }}
     steps:
       - name: Access to the last release
         uses: oprypin/find-latest-tag@v1
