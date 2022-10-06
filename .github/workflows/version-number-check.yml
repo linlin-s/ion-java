@@ -2,6 +2,10 @@ name: Version-bump-check
 
 on:
   workflow_call:
+    outputs:
+      result:
+        description: "The version check result"
+        value: ${{ jobs.check-version-bump.outputs.output1 }}
 
 jobs:
   check-version-bump:
