@@ -3,7 +3,7 @@ on: [pull_request]
 
 jobs:
   check-version-bump:
-    name: check-version-number
+    name: check-version-bump
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.check-version-change.outputs.result }}
@@ -26,30 +26,28 @@ jobs:
         run: |
           cd /home/runner/work/ion-java/ion-java/ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo $versionNew
           commitID=$(git rev-parse HEAD)
           cd /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
 
   fast-forward-check:
     needs: check-version-bump
     name: fast-forward-check
-    runs-on: ubuntu-latest
     if: ${{ needs.check-version-bump.outputs.output1 == 'pass' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Access to the last release
         uses: oprypin/find-latest-tag@v1
         id: check_last_release
         with:
-          repository: linlin-s/ion-java
+          repository: amzn/ion-java
           releases-only: true
 
       - name: Checkout the last release
         uses: actions/checkout@v3
         with:
-          repository: linlin-s/ion-java
+          repository: amzn/ion-java
           ref: ${{ steps.check_last_release.outputs.tag }}
           path: last-release
 
@@ -74,7 +72,7 @@ jobs:
       - name: Check whether the incoming release is fast-forward compared to the last release
         run: |
           cd ion-java-new 
-          if git merge-base --is-ancestor ${{env.current_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi 
+          if git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi 
 
       - name: comment
         if: steps.build.outputs.exit_code == 0
