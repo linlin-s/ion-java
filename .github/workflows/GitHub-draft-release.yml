@@ -1,12 +1,37 @@
 name: Create Release after fast-forward check
 on:
-  workflow_run:
-    workflows: [ "Fast-forward checking before release" ]
+  pull_request:
     types:
-      - completed
+      - closed
 
 jobs:
+  check-version-change:
+    if: github.event.pull_request.merged == true
+    name: check-version-change
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the current repository master branch
+        uses: actions/checkout@v3
+        with:
+          repository: linlin-s/ion-java
+          ref: master
+          fetch-depth: 2
+          path: ion-java-current
+
+      - name: Check whether the pull request contains version number bump
+        id: check-version-change
+        run: |
+          cd ion-java-current
+          versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionNew
+          git reset --hard HEAD^          
+          versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionCurrent
+          if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
+
   ion-java-gitHub-auto-release:
+    needs: check-version-change
+    if: ${{ needs.check-version-change.outputs.output1 == 'pass' }}
     name: ion-java-github-auto-release
     runs-on: ubuntu-latest
 
@@ -20,9 +45,7 @@ jobs:
       - name: Build ion-java
         run: |
           cd current_release
-          git submodule init
-          git submodule update
-          mvn clean install
+          mvn clean install -DskipTests
 
       - name: Upload the executable jar to artifacts
         run: |

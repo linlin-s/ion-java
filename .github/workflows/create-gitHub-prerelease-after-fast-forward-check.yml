@@ -1,10 +1,47 @@
 name: Create gitHub prerelease after fast-forward check
-on: workflow_dispatch
+on:
+  pull_request:
+    types:
+      - closed
 
 jobs:
-  draft-release:
-    name: draft-release
+  check-version-number:
+    name: check-version-number
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.check-version-change.outputs.result }}
+    steps:
+      - name: Switch to the branch of the pull request
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: ion-java-new
+
+      - name: Checkout the current repository master branch
+        uses: actions/checkout@v3
+        with:
+          repository: linlin-s/ion-java
+          ref: master
+          path: ion-java-current
+          depth: 2
+
+      - name: Check whether the pull request contains version number bump
+        id: check-version-change
+        run: |
+          cd /home/runner/work/ion-java/ion-java/ion-java-new
+          versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionNew
+          commitID=$(git rev-parse HEAD)
+          cd /home/runner/work/ion-java/ion-java/ion-java-current
+          versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionCurrent
+          if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
+
+  draft-release:
+    needs: check-version-bump
+    runs-on: ubuntu-latest
+    if: ${{ needs.check-version-bump.outputs.result == 'pass' }}
+    name: draft-release
 
     steps:
       - name: Access to the incoming release

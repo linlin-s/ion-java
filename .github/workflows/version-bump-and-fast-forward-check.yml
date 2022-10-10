@@ -3,8 +3,10 @@ on: [pull_request]
 
 jobs:
   check-version-bump:
-    name: check-version-bump
+    name: check-version-number
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.check-version-change.outputs.result }}
     steps:
       - name: Switch to the branch of the pull request
         uses: actions/checkout@v3
@@ -20,32 +22,22 @@ jobs:
           path: ion-java-current
 
       - name: Check whether the pull request contains version number bump
+        id: check-version-change
         run: |
           cd /home/runner/work/ion-java/ion-java/ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo $versionNew
           commitID=$(git rev-parse HEAD)
           cd /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          if [[ $versionNew != $versionCurrent ]]; then echo "version bump check pass"; else exit 1; fi 
-
-  comment-when-version-number-check-failed:
-    needs: check-version-bump
-    if: ${{ failure() }}
-    runs-on: ubuntu-latest
-    name: comment-when-version-number-check-failed
-    steps:
-      - name: Create comment
-        uses: peter-evans/create-or-update-comment@v2
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            This PR doesn't contain version number bump and will not trigger the ion-java GitHub release process.
+          echo $versionCurrent
+          if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
 
   fast-forward-check:
     needs: check-version-bump
     name: fast-forward-check
-    if: ${{ success() }}
     runs-on: ubuntu-latest
+    if: ${{ needs.check-version-bump.outputs.output1 == 'pass' }}
     steps:
       - name: Access to the last release
         uses: oprypin/find-latest-tag@v1
