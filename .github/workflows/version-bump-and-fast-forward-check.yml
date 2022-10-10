@@ -5,6 +5,7 @@ jobs:
   check-version-bump:
     name: check-version-bump
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     outputs:
       output1: ${{ steps.check-version-change.outputs.result }}
     steps:
