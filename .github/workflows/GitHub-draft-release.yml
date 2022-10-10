@@ -9,6 +9,8 @@ jobs:
     if: github.event.pull_request.merged == true
     name: check-version-change
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.check-version-change.outputs.result }}
     steps:
       - name: Checkout the current repository master branch
         uses: actions/checkout@v3
