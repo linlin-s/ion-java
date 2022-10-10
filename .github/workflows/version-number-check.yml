@@ -1,21 +1,26 @@
-name: Version-bump-check
+name: Version-number-check
 
 on:
   workflow_call:
+    inputs:
+      previousID:
+        required: true
+        type: string
+      currentID:
+        required: true
+        type: string
     outputs:
       result:
-        description: "The version check result"
-        value: ${{ jobs.check-version-bump.outputs.output1 }}
+        value: ${{ jobs.check-version-number.outputs.output1 }}
 
 jobs:
-  check-version-bump:
-    name: check-version-bump
+  check-version-number:
+    name: check-version-number
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.check-version-change.outputs.result }}
     steps:
       - name: Switch to the branch of the pull request
-        id: version-check
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -40,9 +45,5 @@ jobs:
           echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
 
-  checkoutput:
-    runs-on: ubuntu-latest
-    needs: check-version-bump
-    steps:
-      - run: echo ${{ needs.check-version-bump.outputs.output1 }}
+
 
