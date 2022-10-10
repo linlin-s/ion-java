@@ -47,7 +47,7 @@ jobs:
       - name: Checkout the last release
         uses: actions/checkout@v3
         with:
-          repository: linlin-s/ion-java
+          repository: amzn/ion-java
           ref: ${{ steps.check_last_release.outputs.tag }}
           path: last-release
 
