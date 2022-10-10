@@ -3,7 +3,7 @@ on: [pull_request]
 
 jobs:
   check-version-bump:
-    name: check-version-number
+    name: check-version-bump
     runs-on: ubuntu-latest
     outputs:
       output1: ${{ steps.check-version-change.outputs.result }}
@@ -26,18 +26,16 @@ jobs:
         run: |
           cd /home/runner/work/ion-java/ion-java/ion-java-new
           versionNew=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo $versionNew
           commitID=$(git rev-parse HEAD)
           cd /home/runner/work/ion-java/ion-java/ion-java-current
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo $versionCurrent
           if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
 
   fast-forward-check:
     needs: check-version-bump
     name: fast-forward-check
-    runs-on: ubuntu-latest
     if: ${{ needs.check-version-bump.outputs.output1 == 'pass' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Access to the last release
         uses: oprypin/find-latest-tag@v1
