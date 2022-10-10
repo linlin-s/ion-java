@@ -1,8 +1,12 @@
 name: Create Release after fast-forward check
-on: [pull_request]
+on:
+  pull_request:
+    types:
+      - closed
 
 jobs:
   check-version-change:
+    if: github.event.pull_request.merged == true
     name: check-version-change
     runs-on: ubuntu-latest
     steps:
@@ -23,11 +27,11 @@ jobs:
           git reset --hard HEAD^          
           versionCurrent=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo $versionCurrent
-          if [[ $versionNew != $versionCurrent ]]; then echo "version check pass"; else exit 1; fi
+          if [[ $versionNew != $versionCurrent ]]; then echo "::set-output name=result::pass"; else echo "::set-output name=result::failed"; fi
 
   ion-java-gitHub-auto-release:
     needs: check-version-change
-    if: ${{ success() }}
+    if: ${{ needs.check-version-change.outputs.output1 == 'pass' }}
     name: ion-java-github-auto-release
     runs-on: ubuntu-latest
 
