@@ -59,7 +59,7 @@ jobs:
       - name: Access to the incoming release
         uses: actions/checkout@v3
         with:
-          repository: linlin-s/ion-java
+          repository: amzn/ion-java
           ref: ${{ github.event.pull_request.head.sha }}
           path: ion-java-new
 
@@ -72,7 +72,7 @@ jobs:
       - name: Check whether the incoming release is fast-forward compared to the last release
         run: |
           cd ion-java-new 
-          if git merge-base --is-ancestor ${{env.last_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi
+          if git merge-base --is-ancestor ${{env.current_release_commit_id}} ${{env.current_release_commit_id}}; then echo "Trigger github release"; else exit 1; fi
 
       - name: comment
         if: ${{ success() }}
