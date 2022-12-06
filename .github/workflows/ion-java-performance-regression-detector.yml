@@ -72,7 +72,7 @@ jobs:
       - name: Checkout the current commit
         uses: actions/checkout@v2
         with:
-          repository: amzn/ion-java
+          repository: linlin-s/ion-java
           ref: master
           path: ion-java
 
