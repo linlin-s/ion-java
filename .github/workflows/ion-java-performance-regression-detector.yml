@@ -3,7 +3,7 @@
 
 name: Ion Java performance regression detector
 
-on: [pull_request]
+on: [pull_request, push]
 
 jobs:
   detect-regression:
@@ -29,7 +29,7 @@ jobs:
       - name: Checkout ion-java-benchmark-cli
         uses: actions/checkout@v2
         with:
-          repository: amzn/ion-java-benchmark-cli
+          repository: linlin-s/ion-java-benchmark-cli
           ref: master
           path: ion-java-benchmark-cli
 
