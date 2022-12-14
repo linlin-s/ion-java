@@ -7,7 +7,6 @@ plugins {
     `maven-publish`
     jacoco
     signing
-    id("org.cyclonedx.bom") version "1.7.2"
     // TODO: static analysis. E.g.:
     // id("com.diffplug.spotless") version "6.11.0"
     // id("com.github.spotbugs") version "4.8.0"
@@ -109,10 +108,6 @@ tasks {
         setOnlyIf { isReleaseVersion && gradle.taskGraph.hasTask("publish") }
     }
 
-    cyclonedxBom {
-        setIncludeConfigs(listOf("runtimeClasspath"))
-        setSkipConfigs(listOf("compileClasspath", "testCompileClasspath"))
-    }
 }
 
 publishing {
