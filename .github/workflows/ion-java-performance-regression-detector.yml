@@ -6,12 +6,37 @@ name: Ion Java performance regression detector
 on: [pull_request]
 
 jobs:
-  detect-regression:
-    name: Detect Regression
+  check-PR-content:
+    name: check-PR-content
 
     runs-on: ubuntu-latest
 
+    outputs:
+      output1: ${{ steps.check-content.outputs.result }}
+
     steps:
+      - name: Fetch PR
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          path: ion-java-new
+
+      - name: check the last commit content
+        id: check-content
+        run: |
+          cd ion-java-new
+          if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass" >> $GITHUB_OUTPUT; else echo "result=fail" >> $GITHUB_OUTPUT; fi
+
+
+  detect-regression:
+    name: Detect Regression
+    needs: check-PR-content
+    if: ${{ needs.check-PR-content.outputs.output1 == 'pass' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo ${{needs.check-PR-content.outputs.output1}}
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
         with:
