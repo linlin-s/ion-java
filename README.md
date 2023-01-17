@@ -5,10 +5,11 @@ A Java implementation of the [Ion data notation](http://amzn.github.io/ion-docs)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.amazon.ion/ion-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.amazon.ion/ion-java)
 [![Javadoc](https://javadoc-badge.appspot.com/com.amazon.ion/ion-java.svg?label=javadoc)](http://www.javadoc.io/doc/com.amazon.ion/ion-java)
 
+
 ## Setup
 This repository contains a [git submodule](https://git-scm.com/docs/git-submodule)
 called `ion-tests`, which holds test data used by `ion-java`'s unit tests.
-
+## test
 The easiest way to clone the `ion-java` repository and initialize its `ion-tests`
 submodule is to run the following command.
 
