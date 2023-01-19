@@ -4,16 +4,14 @@
 name: Ion Java performance regression detector
 
 on:
-  workflow_run:
-    workflows: [ PR Content Check ]
-    types:
-      - completed
-
+  pull_request
 jobs:
+  PR-Content-Check:
+    uses:  linlin-s/ion-java/.github/workflows/PR-content-check.yml@master
   detect-regression:
     name: Detect Regression
-    needs: check-PR-content
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs: PR-Content-Check
+    if: ${{ needs.PR-Content-Check.outputs.result == 'pass' }}
     outputs:
       output1: ${{ steps.regression_result.outputs.result }}
     runs-on: ubuntu-latest
@@ -138,10 +136,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Fail the workflow if regression happened
-      env:
-        regression_detect: ${{needs.detect-regression.outputs.output1}}
-      if: ${{ env.regression_detect == 'false' }}
-      run: |
-        cd benchmarkResults && echo "| Benchmark command | GC Allocation Rate | Heap Usage | Speed |" >> $GITHUB_STEP_SUMMARY && echo "| ----------- | ----------- |----------- | ----------- |" >> $GITHUB_STEP_SUMMARY && for FILE in *; do regressionDetection=$(java -jar /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion) && if [ "$regressionDetection" != "no regression detected" ]; then command=$(echo $FILE | sed "s/_/ /g") && read gc heapUsage speed <<< $( echo ${regressionDetection} | awk -F", " '{print $1" "$2" "$3}' ) && echo "|$command|$gc|$heapUsage|$speed|" >> $GITHUB_STEP_SUMMARY; fi; done
-        exit 1
+      - name: Fail the workflow if regression happened
+        env:
+          regression_detect: ${{needs.detect-regression.outputs.output1}}
+        if: ${{ env.regression_detect == 'false' }}
+        run: |
+          cd benchmarkResults && echo "| Benchmark command | GC Allocation Rate | Heap Usage | Speed |" >> $GITHUB_STEP_SUMMARY && echo "| ----------- | ----------- |----------- | ----------- |" >> $GITHUB_STEP_SUMMARY && for FILE in *; do regressionDetection=$(java -jar /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion) && if [ "$regressionDetection" != "no regression detected" ]; then command=$(echo $FILE | sed "s/_/ /g") && read gc heapUsage speed <<< $( echo ${regressionDetection} | awk -F", " '{print $1" "$2" "$3}' ) && echo "|$command|$gc|$heapUsage|$speed|" >> $GITHUB_STEP_SUMMARY; fi; done
+          exit 1

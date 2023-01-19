@@ -3,12 +3,19 @@
 
 name: PR Content Check
 
-on: [pull_request]
+on:
+  workflow_call:
+    outputs:
+      result:
+        description: "The first output string"
+        value: ${{ jobs.check-PR-content.outputs.output1 }}
 
 jobs:
   check-PR-content:
     name: Check PR Content
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.check-content.outputs.result }}
     steps:
       - name: Checkout the incoming pull request
         uses: actions/checkout@v3
@@ -21,5 +28,5 @@ jobs:
         id: check-content
         run: |
           cd ion-java-new
-          if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass"; else exit 1; fi
-        continue-on-error: true
+          if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass" >> $GITHUB_OUTPUT; else echo "result=fail" >> $GITHUB_OUTPUT; fi
+      - name :
