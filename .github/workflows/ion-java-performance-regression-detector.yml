@@ -13,7 +13,7 @@ jobs:
   detect-regression:
     name: Detect Regression
     needs: check-PR-content
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ jobs.check-PR-content.steps.result == 'pass' }}
     runs-on: ubuntu-latest
 
     steps:

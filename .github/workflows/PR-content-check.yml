@@ -23,4 +23,4 @@ jobs:
         id: check-content
         run: |
           cd ion-java-new
-          if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass"; else exit 1; fi
+          if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass" >> $GITHUB_ENV; else echo "result=fail" >> $GITHUB_ENV; fi
