@@ -9,7 +9,6 @@ jobs:
   check-PR-content:
     name: Check PR Content
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout the incoming pull request
         uses: actions/checkout@v3
@@ -23,3 +22,4 @@ jobs:
         run: |
           cd ion-java-new
           if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass"; else exit 1; fi
+        continue-on-error: true
