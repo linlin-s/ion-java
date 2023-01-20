@@ -29,4 +29,3 @@ jobs:
         run: |
           cd ion-java-new
           if [[ $(git log -1 --name-only) == *"src/"* ]]; then echo "result=pass" >> $GITHUB_OUTPUT; else echo "result=fail" >> $GITHUB_OUTPUT; fi
-      - name :
