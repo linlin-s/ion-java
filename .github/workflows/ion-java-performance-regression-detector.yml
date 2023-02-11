@@ -37,21 +37,31 @@ jobs:
           ref: master
           path: ion-java-benchmark-cli
 
+      - name: Checkout ion-data-generator
+        uses: actions/checkout@v3
+        with:
+          repository: amazon-ion/ion-data-generator
+          ref: main
+          path: ion-data-generator
+
       - name: Build ion-java-benchmark-cli
         run: cd ion-java-benchmark-cli && mvn clean install
+
+      - name: Build ion-data-generator
+        run: cd ion-data-generator && mvn clean install
 
       - name: Check the version of ion-java.
         run: java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar --version
 
-      - name: Generate test Ion Data
+      - name: Generate test data
         run: |
           mkdir -p testData
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/workflow/nestedStruct.isl testData/testStructs.10n
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/workflow/nestedList.isl testData/testLists.10n
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/workflow/sexp.isl testData/testSexps.10n
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/workflow/realWorldDataSchema01.isl testData/realWorldData01.10n
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/workflow/realWorldDataSchema02.isl testData/realWorldData02.10n
-          java -jar ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar  generate -S 50000 --input-ion-schema ion-java-benchmark-cli/tst/com/amazon/ion/workflow/realWorldDataSchema03.isl testData/realWorldData03.10n
+          java -jar ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar generate -S 50000 --input-ion-schema ion-data-generator/tst/com/amazon/ion/workflow/nestedStruct.isl testData/testStructs.10n
+          java -jar ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar generate -S 50000 --input-ion-schema ion-data-generator/tst/com/amazon/ion/workflow/nestedList.isl testData/testLists.10n
+          java -jar ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar generate -S 50000 --input-ion-schema ion-data-generator/tst/com/amazon/ion/workflow/sexp.isl testData/testSexps.10n
+          java -jar ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar generate -S 50000 --input-ion-schema ion-data-generator/tst/com/amazon/ion/workflow/realWorldDataSchema01.isl testData/realWorldData01.10n
+          java -jar ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar generate -S 50000 --input-ion-schema ion-data-generator/tst/com/amazon/ion/workflow/realWorldDataSchema02.isl testData/realWorldData02.10n
+          java -jar ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar generate -S 50000 --input-ion-schema ion-data-generator/tst/com/amazon/ion/workflow/realWorldDataSchema03.isl testData/realWorldData03.10n
 
       - name: Upload test Ion Data to artifacts
         uses: actions/upload-artifact@v2
@@ -119,7 +129,7 @@ jobs:
         id: regression_result
         run: |
           result=true
-          cd benchmarkResults && for FILE in *; do message=$(java -jar /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion | tee /dev/stderr) && if [ "$message" != "no regression detected" ]; then result=false; fi; done
+          cd benchmarkResults && for FILE in *; do message=$(java -jar /home/runner/work/ion-java/ion-java/ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion | tee /dev/stderr) && if [ "$message" != "no regression detected" ]; then result=false; fi; done
           echo "::set-output name=regression-result::$result"
           if [ "$result" = "true" ]; then echo "No regression detected!" >> $GITHUB_STEP_SUMMARY; fi
 
@@ -134,5 +144,5 @@ jobs:
           regression_detect: ${{steps.regression_result.outputs.regression-result}}
         if: ${{ env.regression_detect == 'false' }}
         run: |
-          cd benchmarkResults && echo "| Benchmark command | GC Allocation Rate | Heap Usage | Speed |" >> $GITHUB_STEP_SUMMARY && echo "| ----------- | ----------- |----------- | ----------- |" >> $GITHUB_STEP_SUMMARY && for FILE in *; do regressionDetection=$(java -jar /home/runner/work/ion-java/ion-java/ion-java-benchmark-cli/target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion) && if [ "$regressionDetection" != "no regression detected" ]; then command=$(echo $FILE | sed "s/_/ /g") && read gc heapUsage speed <<< $( echo ${regressionDetection} | awk -F", " '{print $1" "$2" "$3}' ) && echo "|$command|$gc|$heapUsage|$speed|" >> $GITHUB_STEP_SUMMARY; fi; done
+          cd benchmarkResults && echo "| Benchmark command | GC Allocation Rate | Heap Usage | Speed |" >> $GITHUB_STEP_SUMMARY && echo "| ----------- | ----------- |----------- | ----------- |" >> $GITHUB_STEP_SUMMARY && for FILE in *; do regressionDetection=$(java -jar /home/runner/work/ion-java/ion-java/ion-data-generator/target/ion-data-generator-1.0-SNAPSHOT.jar compare --benchmark-result-previous $FILE/previous.ion --benchmark-result-new $FILE/new.ion $FILE/report.ion) && if [ "$regressionDetection" != "no regression detected" ]; then command=$(echo $FILE | sed "s/_/ /g") && read gc heapUsage speed <<< $( echo ${regressionDetection} | awk -F", " '{print $1" "$2" "$3}' ) && echo "|$command|$gc|$heapUsage|$speed|" >> $GITHUB_STEP_SUMMARY; fi; done
           exit 1
