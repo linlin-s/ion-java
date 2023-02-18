@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: amazon-ion/ion-data-generator
-          ref: main
+          ref: update
           path: ion-data-generator
 
       - name: Build ion-java-benchmark-cli
@@ -72,7 +72,7 @@ jobs:
       - name: Benchmark ion-java from the new commit
         run: |
           mkdir -p benchmarkResults
-          cd ion-java-benchmark-cli && java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations tst/com/amazon/ion/benchmark/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
+          cd ion-data-generator && java -jar target/ion-data-generator-1.0-SNAPSHOT.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations tst/com/amazon/ion/workflow/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
 
       - name: Upload benchmark results to artifacts
         uses: actions/upload-artifact@v2
@@ -117,7 +117,7 @@ jobs:
           path: benchmarkResults
 
       - name: Benchmark ion-java from the previous commit and add the generated benchmark results to the existing directories
-        run: cd ion-java-benchmark-cli && java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations tst/com/amazon/ion/benchmark/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
+        run: cd ion-data-generator && java -jar target/ion-data-generator-1.0-SNAPSHOT.jar run-suite --test-ion-data /home/runner/work/ion-java/ion-java/testData --benchmark-options-combinations tst/com/amazon/ion/workflow/optionsCombinations.ion /home/runner/work/ion-java/ion-java/benchmarkResults
 
       - name: Upload new benchmark results directory to artifacts
         uses: actions/upload-artifact@v2

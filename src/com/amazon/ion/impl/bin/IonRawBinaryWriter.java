@@ -839,6 +839,7 @@ import java.util.NoSuchElementException;
         }
         if (!currentAnnotationSids.isEmpty())
         {
+
             // we have to push a container context for annotations
             updateLength(preallocationMode.typedLength);
             pushContainer(ContainerType.ANNOTATION);
