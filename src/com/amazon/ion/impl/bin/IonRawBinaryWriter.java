@@ -847,8 +847,9 @@ import java.util.NoSuchElementException;
             final long annotationsLengthPosition = buffer.position();
             buffer.writeVarUInt(0L);
             int annotationsLength = 0;
+            int size = currentAnnotationSids.size();
             // XXX: This is a very hot path. This code intentionally avoids creating iterators.
-            for (int m = 0; m < currentAnnotationSids.size(); m++)
+            for (int m = 0; m < size; m++)
             {
                 final int symbol = currentAnnotationSids.get(m);
                 checkSid(symbol);
