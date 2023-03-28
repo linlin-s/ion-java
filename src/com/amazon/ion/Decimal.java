@@ -53,6 +53,7 @@ public class Decimal
     private static final class NegativeZero extends Decimal
     {
         private static final long serialVersionUID = 1L;
+        //Test the workflow
 
         private NegativeZero(int scale)
         {
