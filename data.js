@@ -13,7 +13,7 @@ var xyValues = [
 ];
 
 new Chart("myChart", {
-  type: "scatter",
+  type: "line",
   data: {
     datasets: [{
       pointRadius: 4,
