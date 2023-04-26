@@ -1,21 +1,15 @@
-new Chart(document.getElementById("line-chart"), {
-		type : 'line',
-		data : {
-			labels : [ 1500, 1600, 1700, 1750, 1800, 1850,
-					1900, 1950, 1999, 2050 ],
-			datasets : [
-					{
-						data : [ 186, 205, 1321, 1516, 2107,
-								2191, 3133, 3221, 4783, 5478 ],
-						label : "America",
-						borderColor : "#3cba9f",
-						fill : false
-					}]
-		},
-		options : {
-			title : {
-				display : true,
-				text : 'Chart JS Line Chart Example'
-			}
-		}
-	});
+const xValues = [50,60,70,80,90,100,110,120,130,140,150];
+const yValues = [7,8,8,9,9,9,10,11,14,14,15];
+
+new Chart("myChart", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor:"rgba(0,0,255,1.0)",
+      borderColor: "rgba(0,0,255,0.1)",
+      data: yValues
+    }]
+  },
+  options:{...}
+});
