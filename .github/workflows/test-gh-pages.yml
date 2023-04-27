@@ -58,14 +58,14 @@ jobs:
       - name: Benchmark ion-java from the new commit
         run: |
           mkdir -p benchmarkResults
-          cd ion-java-benchmark-cli && java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar write --api streaming -o /home/runner/work/ion-java/ion-java/benchmarkResults/benchmarkResult.json --io-type buffer --warmups 4 --iterations 4 /home/runner/work/ion-java/ion-java/testData/testStructs.10n
-          cat /home/runner/work/ion-java/ion-java/benchmarkResults/benchmarkResult.json 
+          cd ion-java-benchmark-cli && java -jar target/ion-java-benchmark-cli-0.0.1-SNAPSHOT-jar-with-dependencies.jar write --api streaming --io-type buffer --warmups 4 --iterations 4 /home/runner/work/ion-java/ion-java/testData/testStructs.10n
+ 
       - name: Store Benchmark Result
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: JMH Benchmark
-          tool: 'jmh'
-          output-file-path: '/home/runner/work/ion-java/ion-java/benchmarkResults/benchmarkResult.json'
+          tool: 'customSmallerIsBetter'
+          output-file-path: '/home/runner/work/ion-java/ion-java/benchmarkResult.json'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           gh-pages-branch: benchmark-result-gh-pages
           auto-push: true
