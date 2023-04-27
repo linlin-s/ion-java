@@ -5,7 +5,6 @@ on: [pull_request, push]
 jobs:
   detect-regression:
     name: Detect Regression
-    needs: PR-Content-Check
     runs-on: ubuntu-latest
 
     steps:
