@@ -29,7 +29,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Update
-        run: sed -i 's/var x = \[7,8,8,9,9,9,10,11,14,14,15\]/var x = \[7,8,8,9,9,9,10,11,14,14,3\]/g' /home/runner/work/ion-java/ion-java/data.js
+        run: |
+          sed -i 's/var yValues = \[7,8,8,9,9,9,10,11,14,14,15\]/var yValues = \[7,8,8,9,9,9,10,11,14,14,3\]/g' /home/runner/work/ion-java/ion-java/data.js
+          cat /home/runner/work/ion-java/ion-java/data.js
       - name: commit change
         uses: stefanzweifel/git-auto-commit-action@v4
       - name: Setup Pages
