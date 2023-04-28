@@ -22,12 +22,16 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build job
+  # Build job  
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Update
+        run: sed -i 's/var x = \[7,8,8,9,9,9,10,11,14,14,15\]/var x = \[7,8,8,9,9,9,10,11,14,14,3\]/g' data.js
+      - name: commit change
+        uses: stefanzweifel/git-auto-commit-action@v4
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Build with Jekyll
