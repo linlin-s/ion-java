@@ -1,4 +1,4 @@
-var xValues = [50,60,70,80,90,100,110,120,130,140,150];
+var yValues = ${a};
 var yValues = [$(echo "[$(echo "[$(echo "[$(echo "[$(echo "[$(echo "[$(echo "[\1, $a]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh)];
 
 new Chart("myChart1", {
