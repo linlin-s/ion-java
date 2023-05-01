@@ -1,6 +1,6 @@
 var xValues = [1,2,3];
 var yValues = [4,5,6];
-var new_element = 259434790f09eaab6a18faeccb5c7bc29606467e
+var new_element = 70f160d185dea2e741cf47788d4dbe05ddad0bff
 var new_xValues = xValues.push(new_element);
 var new_yValues = yValues.push(new_element);
 
