@@ -38,7 +38,8 @@ jobs:
           echo "MY_VAR=$(grep -oP '(?<=var yValues = ).*(?=;)' /home/runner/work/ion-java/ion-java/data.js)" >> $GITHUB_ENV          
       - name: Update
         run: |
-          sed -i 's/var yValues = \[7,8,8,9,9,9,10,11,14,14,15\]/var yValues = \[7,8,8,9,9,9,10,11,14,14,3\]/g' /home/runner/work/ion-java/ion-java/data.js
+          MT_ID = 7
+          sed -i 's/var yValues = \[\(.*\)\]/var yValues = [\$(echo \"[\\1, ${MT_ID}]\" | jq -s flatten | jq -r @sh)]/g' /home/runner/work/ion-java/ion-java/data.js
           cat /home/runner/work/ion-java/ion-java/data.js
       - name: commit change
         uses: stefanzweifel/git-auto-commit-action@v4
