@@ -37,8 +37,10 @@ jobs:
         run: |
           echo "MY_VAR=$(grep -oP '(?<=var xValues = ).*(?=;)' /home/runner/work/ion-java/ion-java/data.js)" >> $GITHUB_ENV          
       - name: Append an element to env var 
-        run: echo "MY_VAR=$(jq '. + [\"'$COMMIT_ID'\"]' <<< $MY_VAR)" >> $GITHUB_ENV
-
+        run: |
+          MY_VAR=$(jq '. + ['$COMMIT_ID']' <<< "$MY_VAR")
+          echo "MY_VAR=$MY_VAR" >> $GITHUB_ENV
+          
       - name: Update
         run: |
           sed -i 's/var xValues = \[\(.*\)\]/var yValues = $MY_VAR/g' /home/runner/work/ion-java/ion-java/data.js
