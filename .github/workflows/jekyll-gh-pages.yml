@@ -30,6 +30,14 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT_TOKEN }} 
+      - name: check commit
+        run: echo "COMMIT_ID=${{ github.sha }}" >> $GITHUB_ENV
+        
+      - name: search yValues
+        run: |
+          MY_VAR=$(grep -oP '(?<=var yValues = ).*(?=;)' /home/runner/work/ion-java/ion-java/data.js)
+          echo "MY_ENV_VAR=$MY_VAR" >> $GITHUB_ENV
+          
       - name: Update
         run: |
           sed -i 's/var yValues = \[7,8,8,9,9,9,10,11,14,14,15\]/var yValues = \[7,8,8,9,9,9,10,11,14,14,3\]/g' /home/runner/work/ion-java/ion-java/data.js
