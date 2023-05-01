@@ -39,7 +39,7 @@ jobs:
       - name: Append an element to env var 
         run: |
           previous_list_xValues=$MY_VAR
-          new=echo "${previous_list_xValues}" | jq ". + [${{COMMIT_ID}}]"
+          new=echo "${previous_list_xValues}" | jq ". + [\'${COMMIT_ID}\']"
           echo "NEW_LIST=${new}" >> $GITHUB_ENV
       - name: Update
         run: |
