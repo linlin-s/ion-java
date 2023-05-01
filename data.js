@@ -1,6 +1,6 @@
 var xValues = [1,2,3];
 var yValues = [4,5,6];
-var new_element = "${COMMIT_ID}"
+var new_element = ce2de52a9a3cd405cffa93680c5c660f1f111437
 var new_xValues = xValues.push(new_element);
 var new_yValues = yValues.push(new_element);
 
