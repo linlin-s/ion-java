@@ -39,7 +39,7 @@ jobs:
       - name: Update
         run: |
           a=7
-          sed -i 's/var yValues = \[\(.*\)\]/var yValues = [\$(echo \"[\\1, $a]\" | jq -s flatten | jq -r @sh)]/g' /home/runner/work/ion-java/ion-java/data.js
+          sed -i "s/var yValues = \[\(.*\)\]/var yValues = [\$(echo \"[\\1, $a]\" | jq -s flatten | jq -r @sh)]/g" /home/runner/work/ion-java/ion-java/data.js
           cat /home/runner/work/ion-java/ion-java/data.js
       - name: commit change
         uses: stefanzweifel/git-auto-commit-action@v4
