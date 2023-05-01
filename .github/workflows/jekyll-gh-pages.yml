@@ -30,25 +30,35 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT_TOKEN }} 
+          
       - name: check commit
         run: echo "COMMIT_ID=${{ github.sha }}" >> $GITHUB_ENV
-        
+      
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: "gh-pages"
+          token: ${{ secrets.PAT_TOKEN }} 
+          path: gh-pages
+          
       - name: search yValues
         run: |
-          echo "MY_VAR=$(grep -oP '(?<=var xValues = ).*(?=;)' /home/runner/work/ion-java/ion-java/data.js)" >> $GITHUB_ENV          
-
-      - name: Update
-        run: |
-          sed -i 's/var new_element = .*/var new_element = '${{env.COMMIT_ID}}'/g' /home/runner/work/ion-java/ion-java/data.js
-          cat /home/runner/work/ion-java/ion-java/data.js
+          cd gh-pages
+          echo "MY_VAR=$(grep -oP '(?<=var xValues = ).*(?=;)' /home/runner/work/ion-java/ion-java/gh-pages/data.js)" >> $GITHUB_ENV          
+          sed -i 's/var new_element = .*/var new_element = '${{env.COMMIT_ID}}'/g' /home/runner/work/ion-java/ion-java/gh-pages/data.js
+          cat /home/runner/work/ion-java/ion-java/gh-pages/data.js
+          
       - name: commit change
         uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: gh-pages
       - name: Setup Pages
         uses: actions/configure-pages@v3
+        
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./
+          source: ./gh-pages/
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
