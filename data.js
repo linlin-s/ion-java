@@ -1,5 +1,5 @@
 var xValues = [50,60,70,80,90,100,110,120,130,140,150];
-var yValues = [7,8,8,9,9,9,10,11,14,14,3];
+var yValues = [$(echo "[\1, $a]" | jq -s flatten | jq -r @sh)];
 
 new Chart("myChart1", {
   type: "line",
