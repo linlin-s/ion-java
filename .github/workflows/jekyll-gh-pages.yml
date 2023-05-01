@@ -39,7 +39,7 @@ jobs:
 
       - name: Update
         run: |
-          sed -i 's/var new_element = .*/var new_element = "${COMMIT_ID}"/g' /home/runner/work/ion-java/ion-java/data.js
+          sed -i 's/var new_element = .*/var new_element = '${{env.COMMIT_ID}}'/g' /home/runner/work/ion-java/ion-java/data.js
           cat /home/runner/work/ion-java/ion-java/data.js
       - name: commit change
         uses: stefanzweifel/git-auto-commit-action@v4
