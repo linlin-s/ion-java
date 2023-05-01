@@ -1,16 +1,19 @@
 var xValues = [1,2,3];
-var yValues = [$(echo "[$(echo "[$(echo "[$(echo "[$(echo "[$(echo "[$(echo "[\1, $a]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh), 7]" | jq -s flatten | jq -r @sh)];
+var yValues = [4,5,6]
+var new_element = 1;
+var new_xValues = xValues.push(new_element);
+var new_yValues = yValues.push(new_element);
 
 new Chart("myChart1", {
   type: "line",
   data: {
-    labels: xValues,
+    labels: new_xValues,
     datasets: [{
       fill: false,
       lineTension: 0,
       backgroundColor: "rgba(0,0,255,1.0)",
       borderColor: "rgba(0,0,255,0.1)",
-      data: yValues
+      data: new_yValues
     }]
   },
   options: {
@@ -23,13 +26,13 @@ new Chart("myChart1", {
 new Chart("myChart2", {
   type: "line",
   data: {
-    labels: xValues,
+    labels: new_xValues,
     datasets: [{
       fill: false,
       lineTension: 0,
       backgroundColor: "rgba(0,0,255,1.0)",
       borderColor: "rgba(0,0,255,0.1)",
-      data: yValues
+      data: new_yValues
     }]
   },
   options: {
