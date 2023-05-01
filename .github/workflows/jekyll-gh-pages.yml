@@ -36,14 +36,10 @@ jobs:
       - name: search yValues
         run: |
           echo "MY_VAR=$(grep -oP '(?<=var xValues = ).*(?=;)' /home/runner/work/ion-java/ion-java/data.js)" >> $GITHUB_ENV          
-      - name: Append an element to env var 
-        run: |
-          previous_list_xValues=$MY_VAR
-          new=echo "${previous_list_xValues}" | jq ". + [\'${COMMIT_ID}\']"
-          echo "NEW_LIST=${new}" >> $GITHUB_ENV
+
       - name: Update
         run: |
-          sed -i 's/var xValues = \[\(.*\)\]/var yValues = $MY_VAR/g' /home/runner/work/ion-java/ion-java/data.js
+          sed -i 's/var new_element = .*/var new_element = "${COMMIT_ID}"/g' /home/runner/work/ion-java/ion-java/data.js
           cat /home/runner/work/ion-java/ion-java/data.js
       - name: commit change
         uses: stefanzweifel/git-auto-commit-action@v4
