@@ -1,0 +1,7 @@
+Benchmark                                                                           (input)                                   (options)  Mode  Cnt       Score      Error   Units
+Bench.run                      /home/runner/work/ion-java/ion-java/testData/testStructs.10n  write::{f:ION_BINARY,t:BUFFER,a:STREAMING}    ss   10       1.260 ±    0.802   ms/op
+Bench.run:Heap usage           /home/runner/work/ion-java/ion-java/testData/testStructs.10n  write::{f:ION_BINARY,t:BUFFER,a:STREAMING}    ss   10       3.475 ±    0.010      MB
+Bench.run:Serialized size      /home/runner/work/ion-java/ion-java/testData/testStructs.10n  write::{f:ION_BINARY,t:BUFFER,a:STREAMING}    ss   10       0.054                 MB
+Bench.run:·gc.alloc.rate       /home/runner/work/ion-java/ion-java/testData/testStructs.10n  write::{f:ION_BINARY,t:BUFFER,a:STREAMING}    ss   10       0.196 ±    0.009  MB/sec
+Bench.run:·gc.alloc.rate.norm  /home/runner/work/ion-java/ion-java/testData/testStructs.10n  write::{f:ION_BINARY,t:BUFFER,a:STREAMING}    ss   10  103001.600 ± 5075.826    B/op
+Bench.run:·gc.count            /home/runner/work/ion-java/ion-java/testData/testStructs.10n  write::{f:ION_BINARY,t:BUFFER,a:STREAMING}    ss   10         ≈ 0             counts
