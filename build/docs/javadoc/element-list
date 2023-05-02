@@ -1,0 +1,9 @@
+com.amazon.ion
+com.amazon.ion.apps
+com.amazon.ion.facet
+com.amazon.ion.impl
+com.amazon.ion.impl.bin
+com.amazon.ion.impl.bin.utf8
+com.amazon.ion.impl.lite
+com.amazon.ion.system
+com.amazon.ion.util

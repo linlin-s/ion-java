@@ -1,0 +1,60 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.amazon.ion",
+    "module": "ion-java",
+    "version": "1.9.7-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.0.2"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "ion-java-1.9.7-SNAPSHOT.jar",
+          "url": "ion-java-1.9.7-SNAPSHOT.jar",
+          "size": 805494,
+          "sha512": "7bee742f5a2a160aa56355795d71311149bc24ea391cfc735777c1f374262de3c2e49160ff70629b7d5943c0c4fbb555fa1bc18cb2a74efffb9212e12e6d34d8",
+          "sha256": "bfcc70bf91be1d42b7cac9ced00feae4d54fa198c1dfb18a96c0dac4fe1bd636",
+          "sha1": "c09e14b1a8246f0587bb229cbffe8971686efe1d",
+          "md5": "4c918134e92e2ea4dabd58d42e937d0f"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "ion-java-1.9.7-SNAPSHOT.jar",
+          "url": "ion-java-1.9.7-SNAPSHOT.jar",
+          "size": 805494,
+          "sha512": "7bee742f5a2a160aa56355795d71311149bc24ea391cfc735777c1f374262de3c2e49160ff70629b7d5943c0c4fbb555fa1bc18cb2a74efffb9212e12e6d34d8",
+          "sha256": "bfcc70bf91be1d42b7cac9ced00feae4d54fa198c1dfb18a96c0dac4fe1bd636",
+          "sha1": "c09e14b1a8246f0587bb229cbffe8971686efe1d",
+          "md5": "4c918134e92e2ea4dabd58d42e937d0f"
+        }
+      ]
+    }
+  ]
+}

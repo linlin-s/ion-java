@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.amazon.ion</groupId>
+  <artifactId>ion-java</artifactId>
+  <versioning>
+    <latest>1.9.7-SNAPSHOT</latest>
+    <versions>
+      <version>1.9.7-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20230502025251</lastUpdated>
+  </versioning>
+</metadata>
