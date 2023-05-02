@@ -1,5 +1,5 @@
 const commitID = ["a","c","d","e"]
-const speed = ;
+const speed = [1,2,4];
 const heapUsage = [4,5,6]
 const serializedSize = [5,6,7]
 const gcAllocateRate = [3,6,7]
