@@ -2,10 +2,7 @@ const speed = [0.874,1.421,0.989,1.022,0.986];
 const heapUsage = [3.474,3.469,3.470,3.470,3.466];
 const serializedSize = [0.053,0.053,0.053,0.053,0.052]
 const gcAllocateRate = [0.196,0.196,0.196,0.196,0.196]
-const commitID = [“2791c29”,“d23e023”, “fb0b2c9”,“e24d7fb”, “133664d”]
-
-
-
+const commitID = ['2791c29','d23e023','fb0b2c9','e24d7fb','133664d'];
 
 new Chart("speed", {
   type: "line",
