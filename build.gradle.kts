@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+    implementation("junit:junit:4.13.1")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testCompileOnly("junit:junit:4.13")
     testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
