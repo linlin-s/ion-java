@@ -55,10 +55,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.ListIterator;
 
 /**
  * Low-level binary {@link IonWriter} that understands encoding concerns but doesn't operate with any sense of symbol table management.
@@ -258,37 +256,40 @@ import java.util.NoSuchElementException;
         /** The size of the current value. */
         public long length;
         /**
-         * The index of the patch point placeholder.
+         * The index of the patch point if present, <tt>-1</tt> otherwise..
          */
-        public int placeholderPatchIndex;
+        public int patchIndex;
 
         public ContainerInfo()
         {
             type = null;
             position = -1;
             length = -1;
-            placeholderPatchIndex = -1;
+            patchIndex = -1;
         }
 
         public void appendPatch(final long oldPosition, final int oldLength, final long length)
         {
-            patchPoints.get(placeholderPatchIndex).initialize(oldPosition, oldLength, length);
+            if (patchIndex == -1) { // We have no assigned patch point, we need to make our own
+                patchIndex = patchPoints.push(p -> p.initialize(oldPosition, oldLength, length));
+            } else { // We have an assigned patch point already, write the correct data into it
+                patchPoints.get(patchIndex).initialize(oldPosition, oldLength, length);
+            }
         }
 
-        public void initialize(final ContainerType type, final long offset) {
+        public ContainerInfo initialize(final ContainerType type, final long offset) {
             this.type = type;
             this.position = offset;
             this.length = 0;
-            if (type != ContainerType.VALUE) {
-                placeholderPatchIndex = patchPoints.size();
-                patchPoints.push().initialize(-1, -1, -1);
-            }
+            this.patchIndex = -1;
+
+            return this;
         }
 
         @Override
         public String toString()
         {
-            return "(CI " + type + " pos:" + position + " len:" + length + ")";
+            return "(CI " + type + " pos:" + position + " len:" + length + " patch:"+patchIndex+")";
         }
     }
 
@@ -313,10 +314,15 @@ import java.util.NoSuchElementException;
             return "(PP old::(" + oldPosition + " " + oldLength + ") patch::(" + length + ")";
         }
 
-        public void initialize(final long oldPosition, final int oldLength, final long length) {
+        public PatchPoint initialize(final long oldPosition, final int oldLength, final long length) {
             this.oldPosition = oldPosition;
             this.oldLength = oldLength;
             this.length = length;
+            return this;
+        }
+
+        public PatchPoint clear() {
+            return initialize(-1, -1, -1);
         }
     }
 
@@ -543,17 +549,17 @@ import java.util.NoSuchElementException;
     private void pushContainer(final ContainerType type)
     {
         // XXX we push before writing the type of container
-        containers.push().initialize(type, buffer.position() + 1);
+        containers.push(c -> c.initialize(type, buffer.position() + 1));
     }
 
-    private void addPatchPoint(final long position, final int oldLength, final long value, final ContainerInfo container)
+    private void addPatchPoint(final ContainerInfo container, final long position, final int oldLength, final long value)
     {
         // record the size of the length data.
         final int patchLength = WriteBuffer.varUIntLength(value);
         if (container == null)
         {
             // not nested, just append to the root list
-            patchPoints.push().initialize(position, oldLength, value);
+            patchPoints.push(p -> p.initialize(position, oldLength, value));
         }
         else
         {
@@ -613,7 +619,6 @@ import java.util.NoSuchElementException;
 
                 // We've reclaimed some number of bytes; adjust the container length as appropriate.
                 length -= numberOfBytesToShiftBy;
-                reclaimPlaceholderPatchPoint(currentContainer.placeholderPatchIndex);
             }
             else if (currentContainer.length <= preallocationMode.contentMaxLength)
             {
@@ -621,14 +626,23 @@ import java.util.NoSuchElementException;
                 // fit in the preallocated length bytes that were added to the buffer when the container was started.
                 // Update those bytes with the VarUInt encoding of the length value.
                 preallocationMode.patchLength(buffer, positionOfFirstLengthByte, length);
-                reclaimPlaceholderPatchPoint(currentContainer.placeholderPatchIndex);
             }
             else
             {
                 // The container's encoded body is too long to fit in the length bytes that were preallocated.
                 // Write the VarUInt encoding of the length in a secondary buffer and make a note to include that
                 // when we go to flush the primary buffer to the output stream.
-                addPatchPoint(positionOfFirstLengthByte, preallocationMode.numberOfLengthBytes(), length, currentContainer);
+                ListIterator<ContainerInfo> stackIterator = containers.iterator();
+                // Riffle down through the stack until we find our first ancestor with a patch point
+                while (stackIterator.hasNext() && stackIterator.next().patchIndex == -1);
+                // The iterator cursor is now positioned on an ancestor container that has a patch point
+                // Ascend back up the stack, all of these ancestors need a patch point assigned before us
+                while (stackIterator.hasPrevious()) {
+                    stackIterator.previous().patchIndex = patchPoints.push(PatchPoint::clear);
+                }
+
+                // Now we add our own patch point
+                addPatchPoint(currentContainer, positionOfFirstLengthByte, preallocationMode.numberOfLengthBytes(), length);
             }
         }
 
@@ -1074,7 +1088,7 @@ import java.util.NoSuchElementException;
         {
             // side patch
             buffer.writeUInt8At(info.position - 1, type | 0xE);
-            addPatchPoint(info.position, 0, info.length, null);
+            addPatchPoint(null, info.position, 0, info.length);
         }
     }
 
