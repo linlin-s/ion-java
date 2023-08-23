@@ -265,7 +265,13 @@ import java.util.ListIterator;
             type = null;
             position = -1;
             length = -1;
-            patchIndex = -1;
+            if (type != ContainerType.VALUE) {
+                patchIndex = -1;
+            } else {
+                patchIndex = -2;
+
+            }
+
         }
 
         public void appendPatch(final long oldPosition, final int oldLength, final long length)
@@ -630,15 +636,19 @@ import java.util.ListIterator;
             else
             {
                 // The container's encoded body is too long to fit in the length bytes that were preallocated.
-                // Write the VarUInt encoding of the length in a secondary buffer and make a note to include that
-                // when we go to flush the primary buffer to the output stream.
+                // Write the length in the patch point list, making a note to include the VarUInt encoding of the length
+                // at the right point when we go to flush the primary buffer to the output stream.
+
                 ListIterator<ContainerInfo> stackIterator = containers.iterator();
                 // Riffle down through the stack until we find our first ancestor with a patch point
                 while (stackIterator.hasNext() && stackIterator.next().patchIndex == -1);
                 // The iterator cursor is now positioned on an ancestor container that has a patch point
                 // Ascend back up the stack, all of these ancestors need a patch point assigned before us
                 while (stackIterator.hasPrevious()) {
-                    stackIterator.previous().patchIndex = patchPoints.push(PatchPoint::clear);
+                    ContainerInfo ancestor = stackIterator.previous();
+                    if (ancestor.patchIndex == -1) {
+                        ancestor.patchIndex = patchPoints.push(PatchPoint::clear);
+                    }
                 }
 
                 // Now we add our own patch point

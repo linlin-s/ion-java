@@ -25,7 +25,6 @@ public class IonManagedBinaryWriterGoodTest extends IonManagedBinaryWriterTestCa
         testdataFiles(GLOBAL_SKIP_LIST,
             GOOD_IONTESTS_FILES);
 
-
     private File myTestFile;
 
     public void setTestFile(File file)

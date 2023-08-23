@@ -137,7 +137,7 @@ public final class _Private_RecyclingStack<T> implements Iterable<T> {
 
         @Override
         public boolean hasPrevious() {
-            return cursor + 1 < _Private_RecyclingStack.this.currentIndex;
+            return cursor + 1 <= _Private_RecyclingStack.this.currentIndex;
         }
 
         @Override
