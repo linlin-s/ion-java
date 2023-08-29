@@ -124,9 +124,6 @@ import java.util.NoSuchElementException;
 
     private static final byte VARINT_NEG_ZERO   = (byte) 0xC0;
 
-    final Utf8StringEncoder utf8StringEncoder = Utf8StringEncoderPool
-            .getInstance()
-            .getOrCreate();
 
     private static final byte[] makeTypedPreallocatedBytes(final int typeDesc, final int length)
     {
@@ -497,7 +494,7 @@ import java.util.NoSuchElementException;
     private final IntList     currentAnnotationSids;
     // XXX this is for managed detection of TLV that is a LST--this is easier to track here than at the managed level
     private boolean                     hasTopLevelSymbolTableAnnotation;
-
+    private final Utf8StringEncoder utf8StringEncoder;
     private boolean                     closed;
 
     /*package*/ IonRawBinaryWriter(final BlockAllocatorProvider provider,
@@ -507,7 +504,8 @@ import java.util.NoSuchElementException;
                                    final StreamCloseMode streamCloseMode,
                                    final StreamFlushMode streamFlushMode,
                                    final PreallocationMode preallocationMode,
-                                   final boolean isFloatBinary32Enabled)
+                                   final boolean isFloatBinary32Enabled,
+                                   final Utf8StringEncoder utf8StringEncoder)
                                    throws IOException
     {
         super(optimization);
@@ -522,6 +520,7 @@ import java.util.NoSuchElementException;
         this.isFloatBinary32Enabled = isFloatBinary32Enabled;
         this.buffer            = new WriteBuffer(allocator);
         this.patchPoints       = new PatchList();
+        this.utf8StringEncoder = utf8StringEncoder;
         this.containers        = new _Private_RecyclingStack<ContainerInfo>(
             10,
             new _Private_RecyclingStack.ElementFactory<ContainerInfo>() {
@@ -1549,7 +1548,6 @@ import java.util.NoSuchElementException;
             // release all of our blocks -- these should never throw
             buffer.close();
             allocator.close();
-            utf8StringEncoder.close();
         }
         finally
         {
