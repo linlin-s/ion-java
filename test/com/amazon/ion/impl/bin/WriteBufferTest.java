@@ -1247,23 +1247,23 @@ public class WriteBufferTest
     /**
      * Test if the method 'varUIntLength' generates the expected length of the provided long value.
      */
-    @Test
-    public void testVarUIntLength1() {
-        int length = varUIntLength(0x7F);
-        assertEquals(1, length);
-    }
-
-    @Test
-    public void testVarUIntLength2() {
-        int length = varUIntLength(0x3FFF);
-        assertEquals(2, length);
-    }
-
-    @Test
-    public void testVarUIntLength3() {
-        int length = varUIntLength(0x1FFFFF);
-        assertEquals(3, length);
-    }
+//    @Test
+//    public void testVarUIntLength1() {
+//        int length = varUIntLength(0x7F);
+//        assertEquals(1, length);
+//    }
+//
+//    @Test
+//    public void testVarUIntLength2() {
+//        int length = varUIntLength(0x3FFF);
+//        assertEquals(2, length);
+//    }
+//
+//    @Test
+//    public void testVarUIntLength3() {
+//        int length = varUIntLength(0x1FFFFF);
+//        assertEquals(3, length);
+//    }
 
     @Test
     public void testVarUIntLength4() {

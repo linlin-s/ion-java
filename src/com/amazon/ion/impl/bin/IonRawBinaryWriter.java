@@ -124,6 +124,18 @@ import java.util.NoSuchElementException;
 
     private static final byte VARINT_NEG_ZERO   = (byte) 0xC0;
 
+    private static final long VAR_INT_BITS_PER_OCTET = 7;
+
+
+    private static final long VAR_UINT_4_OCTET_SHIFT = (3 * VAR_INT_BITS_PER_OCTET);
+    private static final long VAR_UINT_4_OCTET_MIN_VALUE = (1L << VAR_UINT_4_OCTET_SHIFT);
+
+    private static final long VAR_UINT_3_OCTET_SHIFT = (2 * VAR_INT_BITS_PER_OCTET);
+    private static final long VAR_UINT_3_OCTET_MIN_VALUE = (1L << VAR_UINT_3_OCTET_SHIFT);
+
+    private static final long VAR_UINT_2_OCTET_SHIFT = (1 * VAR_INT_BITS_PER_OCTET);
+    private static final long VAR_UINT_2_OCTET_MIN_VALUE = (1L << VAR_UINT_2_OCTET_SHIFT);
+
 
     private static final byte[] makeTypedPreallocatedBytes(final int typeDesc, final int length)
     {
@@ -694,7 +706,20 @@ import java.util.NoSuchElementException;
     private void addPatchPoint(final long position, final int oldLength, final long value)
     {
         // record the length of the patch
-        final int patchLength = WriteBuffer.varUIntLength(value);
+        int patchLength;
+        if (value < VAR_UINT_2_OCTET_MIN_VALUE)
+        {
+            patchLength = 1;
+        }
+        else if (value < VAR_UINT_3_OCTET_MIN_VALUE)
+        {
+            patchLength = 2;
+        }
+        else if (value < VAR_UINT_4_OCTET_MIN_VALUE) {
+            patchLength = 3;
+        } else {
+            patchLength = buffer.varUIntLength(value);
+        }
         final PatchPoint patch = new PatchPoint(position, oldLength, value);
         if (containers.isEmpty())
         {

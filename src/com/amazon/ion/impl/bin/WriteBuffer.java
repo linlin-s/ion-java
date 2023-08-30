@@ -1024,43 +1024,55 @@ import java.util.List;
         return writeVarUIntSlow(value);
     }
 
-    /** Get the length of varUint for the provided value. */
-    public static int varUIntLength(final long value)
-    {
-        if (value < VAR_UINT_2_OCTET_MIN_VALUE)
-        {
-            return 1;
+
+    public static int varUIntLength(final long value) {
+        int length = 4;
+        long middle = value;
+        middle >>>= 21;
+        while (middle >= 0x80) {
+            length ++;
+            middle >>>= 7;
         }
-        if (value < VAR_UINT_3_OCTET_MIN_VALUE)
-        {
-            return 2;
-        }
-        if (value < VAR_UINT_4_OCTET_MIN_VALUE)
-        {
-            return 3;
-        }
-        if (value < VAR_UINT_5_OCTET_MIN_VALUE)
-        {
-            return 4;
-        }
-        if (value < VAR_UINT_6_OCTET_MIN_VALUE)
-        {
-            return 5;
-        }
-        if (value < VAR_UINT_7_OCTET_MIN_VALUE)
-        {
-            return 6;
-        }
-        if (value < VAR_UINT_8_OCTET_MIN_VALUE)
-        {
-            return 7;
-        }
-        if (value < VAR_UINT_9_OCTET_MIN_VALUE)
-        {
-            return 8;
-        }
-        return 9;
+        return length;
     }
+
+//    /** Get the length of varUint for the provided value. */
+////    public static int varUIntLength(final long value)
+////    {
+//        if (value < VAR_UINT_2_OCTET_MIN_VALUE)
+//        {
+//            return 1;
+//        }
+//        if (value < VAR_UINT_3_OCTET_MIN_VALUE)
+//        {
+//            return 2;
+//        }
+//        if (value < VAR_UINT_4_OCTET_MIN_VALUE)
+//        {
+//            return 3;
+//        }
+//        if (value < VAR_UINT_5_OCTET_MIN_VALUE)
+//        {
+//            return 4;
+//        }
+//        if (value < VAR_UINT_6_OCTET_MIN_VALUE)
+//        {
+//            return 5;
+//        }
+//        if (value < VAR_UINT_7_OCTET_MIN_VALUE)
+//        {
+//            return 6;
+//        }
+//        if (value < VAR_UINT_8_OCTET_MIN_VALUE)
+//        {
+//            return 7;
+//        }
+//        if (value < VAR_UINT_9_OCTET_MIN_VALUE)
+//        {
+//            return 8;
+//        }
+//        return 9;
+//    }
 
     /** Write the varUint value to the outputStream. */
     public static void writeVarUIntTo(final OutputStream out, final long value) throws IOException

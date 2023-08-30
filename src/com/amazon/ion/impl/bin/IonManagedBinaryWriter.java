@@ -1168,7 +1168,6 @@ import java.util.Map;
             finally
             {
                 user.close();
-                utf8StringEncoder.close();
             }
         }
     }
