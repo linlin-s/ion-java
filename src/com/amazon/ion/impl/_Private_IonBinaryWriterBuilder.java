@@ -194,6 +194,23 @@ public class _Private_IonBinaryWriterBuilder
     }
 
     @Override
+    public _Private_IonBinaryWriterBuilder withAutoFlushEnbaled(boolean autoFlushEnbaled) {
+        _Private_IonBinaryWriterBuilder b = mutable();
+        b.setFlushEnabled(autoFlushEnbaled);
+        return b;
+    }
+
+    public void setFlushEnabled(boolean autoFlushEnabled) {
+        mutationCheck();
+        if (autoFlushEnabled) {
+            myBinaryWriterBuilder.withAutoFlushEnabled();
+            myBinaryWriterBuilder.withLocalSymbolTableAppendEnabled();
+        } else {
+            myBinaryWriterBuilder.withAutoFlushDisabled();
+        }
+
+    }
+    @Override
     public void setLocalSymbolTableAppendEnabled(boolean enabled)
     {
         mutationCheck();

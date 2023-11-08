@@ -22,9 +22,13 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
+
+import com.amazon.ion.IonReader;
+import com.amazon.ion.IonWriter;
+import com.amazon.ion.system.IonBinaryWriterBuilder;
+import com.amazon.ion.system.IonReaderBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,15 +40,31 @@ public class WriteBufferTest
 {
     // XXX make this a prime to make it more likely that we collide on the edges of the buffer
     private static BlockAllocator ALLOCATOR = BlockAllocatorProviders.basicProvider().vendAllocator(11);
-
+    private static BlockAllocatorProvider provider = BlockAllocatorProviders.basicProvider();
+    private IonBinaryWriterBuilder builder = IonBinaryWriterBuilder.standard().withAutoFlushEnbaled(true);
+    private ByteArrayOutputStream out;
+    private OutputStream outputStream = new ByteArrayOutputStream();
+    private IonRawBinaryWriter rawBinaryWriter = new IonRawBinaryWriter(
+        provider,
+        5,
+        outputStream,
+        AbstractIonWriter.WriteValueOptimization.NONE, // optimization is not relevant for the nested raw writer
+        IonRawBinaryWriter.StreamCloseMode.NO_CLOSE,
+        IonRawBinaryWriter.StreamFlushMode.NO_FLUSH,
+        IonRawBinaryWriter.PreallocationMode.PREALLOCATE_1,
+       false,
+                true
+);
     private WriteBuffer buf;
 
-    private ByteArrayOutputStream out;
+
+    public WriteBufferTest() throws IOException {
+    }
 
     @BeforeEach
-    public void setup()
-    {
-        buf = new WriteBuffer(ALLOCATOR);
+    public void setup() throws IOException {
+//        buf = new WriteBuffer(ALLOCATOR, rawBinaryWriter);
+        buf = rawBinaryWriter.getCurrentBuffer();
         out = new ByteArrayOutputStream();
     }
 
@@ -1525,5 +1545,18 @@ public class WriteBufferTest
             s.append(" ");
         }
         return s.toString().trim();
+    }
+
+    @Test
+    public void testAutoFlush() throws IOException {
+        String inputFile = "/Users/linls/desktop/generatedTestData/newGeneratedNestedData.10n";
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        IonBinaryWriterBuilder builder = IonBinaryWriterBuilder.standard().withLocalSymbolTableAppendEnabled();
+        IonWriter writer = builder.build(out);
+        IonReader reader = IonReaderBuilder.standard().build(new BufferedInputStream(new FileInputStream(inputFile)));
+        while (reader.next() != null) {
+            writer.writeValue(reader);
+        }
+        writer.close();
     }
 }

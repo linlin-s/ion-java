@@ -123,6 +123,8 @@ import java.util.ListIterator;
 
     private static final byte VARINT_NEG_ZERO   = (byte) 0xC0;
 
+    private long endPositionOfTopLevelValue;
+
     final Utf8StringEncoder utf8StringEncoder = Utf8StringEncoderPool
             .getInstance()
             .getOrCreate();
@@ -350,7 +352,7 @@ import java.util.ListIterator;
     private final boolean                       isFloatBinary32Enabled;
     private final WriteBuffer                   buffer;
     private final _Private_RecyclingQueue<PatchPoint> patchPoints;
-    private final _Private_RecyclingStack<ContainerInfo> containers;
+    public final _Private_RecyclingStack<ContainerInfo> containers;
     private int                                 depth;
     private boolean                             hasWrittenValuesSinceFinished;
     private boolean                             hasWrittenValuesSinceConstructed;
@@ -361,6 +363,9 @@ import java.util.ListIterator;
     private boolean                     hasTopLevelSymbolTableAnnotation;
 
     private boolean                     closed;
+    public static boolean autoFlushEnaled;
+
+    public static boolean isValueFinished;
 
     /*package*/ IonRawBinaryWriter(final BlockAllocatorProvider provider,
                                    final int blockSize,
@@ -369,7 +374,8 @@ import java.util.ListIterator;
                                    final StreamCloseMode streamCloseMode,
                                    final StreamFlushMode streamFlushMode,
                                    final PreallocationMode preallocationMode,
-                                   final boolean isFloatBinary32Enabled)
+                                   final boolean isFloatBinary32Enabled,
+                                   final boolean isAutoFlushEnabled)
                                    throws IOException
     {
         super(optimization);
@@ -382,7 +388,7 @@ import java.util.ListIterator;
         this.streamFlushMode   = streamFlushMode;
         this.preallocationMode = preallocationMode;
         this.isFloatBinary32Enabled = isFloatBinary32Enabled;
-        this.buffer            = new WriteBuffer(allocator);
+        this.buffer            = new WriteBuffer(allocator, this);
         this.patchPoints       = new _Private_RecyclingQueue<>(512, PatchPoint::new);
         this.containers        = new _Private_RecyclingStack<ContainerInfo>(
             10,
@@ -400,6 +406,8 @@ import java.util.ListIterator;
         this.currentAnnotationSids            = new IntList();
         this.hasTopLevelSymbolTableAnnotation = false;
         this.closed = false;
+        this.autoFlushEnaled = isAutoFlushEnabled;
+        this.isValueFinished = false;
     }
 
     /** Always returns {@link Symbols#systemSymbolTable()}. */
@@ -418,6 +426,10 @@ import java.util.ListIterator;
     public void setFieldNameSymbol(final SymbolToken name)
     {
         setFieldNameSymbol(name.getSid());
+    }
+
+    public WriteBuffer getCurrentBuffer() {
+        return buffer;
     }
 
     public void setFieldNameSymbol(int sid)
@@ -721,8 +733,7 @@ import java.util.ListIterator;
     }
 
     /** Closes out annotations. */
-    private void finishValue()
-    {
+    private void finishValue() throws IOException {
         if (!containers.isEmpty() && containers.peek().type == ContainerType.ANNOTATION)
         {
             // close out and patch the length
@@ -730,6 +741,9 @@ import java.util.ListIterator;
         }
         hasWrittenValuesSinceFinished = true;
         hasWrittenValuesSinceConstructed = true;
+        if (buffer.shouldFlush() && depth == 0) {
+            finish();
+        }
     }
 
     // Container Manipulation
@@ -912,8 +926,7 @@ import java.util.ListIterator;
     }
 
     /** Write a raw byte array as some type. Note that this does not do {@link #prepareValue()}. */
-    private void writeTypedBytes(final int type, final byte[] data, final int offset, final int length)
-    {
+    private void writeTypedBytes(final int type, final byte[] data, final int offset, final int length) throws IOException {
         int totalLength = 1 + length;
         if (length < 14)
         {
@@ -978,8 +991,7 @@ import java.util.ListIterator;
     }
 
     /** Encodes a decimal, updating the current container length context (which is probably a Decimal/Timestamp). */
-    private void writeDecimalValue(final BigDecimal value)
-    {
+    private void writeDecimalValue(final BigDecimal value) throws IOException {
         final boolean isNegZero = isNegativeZero(value);
         final int signum = value.signum();
         final int exponent = -value.scale();
@@ -1362,12 +1374,12 @@ import java.util.ListIterator;
         }
         if (!containers.isEmpty() || depth > 0)
         {
-            throw new IllegalStateException("Cannot finish within container: " + containers);
+                throw new IllegalStateException("Cannot finish within container: " + containers);
         }
-
         if (patchPoints.isEmpty())
         {
             // nothing to patch--write 'em out!
+            //TODO: conditionally flush data out
             buffer.writeTo(out);
         }
         else
@@ -1404,6 +1416,18 @@ import java.util.ListIterator;
         hasWrittenValuesSinceFinished = false;
     }
 
+    public void autofinish() throws IOException
+    {
+        if (closed)
+        {
+            return;
+        }
+
+        buffer.writeTo(out);
+        buffer.reset();
+
+
+    }
     public void close() throws IOException
     {
         if (closed)

@@ -30,11 +30,15 @@ import java.util.List;
     private final List<Block> blocks;
     private Block current;
     private int index;
+    private IonRawBinaryWriter userWriter;
+    private boolean flushWhenFinsihedTheCurrentValue = false;
 
-    public WriteBuffer(final BlockAllocator allocator)
+
+    public WriteBuffer(final BlockAllocator allocator, IonRawBinaryWriter rawWriter)
     {
         this.allocator = allocator;
         this.blocks = new ArrayList<Block>();
+        this.userWriter = rawWriter;
 
         // initial seed of the first block
         allocateNewBlock();
@@ -105,12 +109,14 @@ import java.util.List;
     }
 
     /** Writes a single octet to the buffer, expanding if necessary. */
-    public void writeByte(final byte octet)
-    {
+    public void writeByte(final byte octet) {
         if (remaining() < 1)
         {
             if (index == blocks.size() - 1)
             {
+                if (userWriter.autoFlushEnaled) {
+                    flushWhenFinsihedTheCurrentValue = true;
+                }
                 allocateNewBlock();
             }
             index++;
@@ -119,6 +125,15 @@ import java.util.List;
         final Block block = current;
         block.data[block.limit] = octet;
         block.limit++;
+    }
+
+    private void flushBufferOut() throws IOException {
+            allocateNewBlock();
+            flushWhenFinsihedTheCurrentValue = true;
+    }
+
+    public boolean shouldFlush() {
+        return flushWhenFinsihedTheCurrentValue;
     }
 
     // slow in the sense that we do all kind of block boundary checking
@@ -136,7 +151,16 @@ import java.util.List;
             {
                 if (index == blocks.size() - 1)
                 {
-                    allocateNewBlock();
+                    if (userWriter.autoFlushEnaled){
+                        try {
+                            flushBufferOut();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        allocateNewBlock();
+
+                    }
                 }
                 index++;
                 current = blocks.get(index);

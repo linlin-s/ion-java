@@ -664,6 +664,7 @@ import java.util.Map;
 
     private boolean                             closed;
 
+
     /*package*/ IonManagedBinaryWriter(final _Private_IonManagedBinaryWriterBuilder builder,
                                        final OutputStream out)
                                        throws IOException
@@ -677,7 +678,8 @@ import java.util.Map;
             StreamCloseMode.NO_CLOSE,
             StreamFlushMode.NO_FLUSH,
             builder.preallocationMode,
-            builder.isFloatBinary32Enabled
+            builder.isFloatBinary32Enabled,
+                false
         );
         this.user = new IonRawBinaryWriter(
             builder.provider,
@@ -687,7 +689,8 @@ import java.util.Map;
             StreamCloseMode.CLOSE,
             StreamFlushMode.FLUSH,
             builder.preallocationMode,
-            builder.isFloatBinary32Enabled
+            builder.isFloatBinary32Enabled,
+                builder.isAutoFlushEnabled
         );
 
         this.catalog = builder.catalog;
