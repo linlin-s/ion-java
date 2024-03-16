@@ -27,6 +27,7 @@ plugins {
     signing
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
+
     id("org.cyclonedx.bom") version "1.7.2"
     id("com.github.spotbugs") version "5.0.13"
     id("org.jlleitschuh.gradle.ktlint") version "11.3.2"
@@ -283,6 +284,7 @@ tasks {
         version.set("0.40.0")
         outputToConsole.set(true)
     }
+
 
     // spotbugs-gradle-plugin creates a :spotbugsTest task by default, but we don't want it
     // see: https://github.com/spotbugs/spotbugs-gradle-plugin/issues/391

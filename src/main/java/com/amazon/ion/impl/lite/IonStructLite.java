@@ -15,6 +15,7 @@
 
 package com.amazon.ion.impl.lite;
 
+import com.amazon.fusion.util.hamt.FunctionalHashTrie;
 import com.amazon.ion.ContainedValueException;
 import com.amazon.ion.IonStruct;
 import com.amazon.ion.IonType;
@@ -28,11 +29,13 @@ import com.amazon.ion.UnknownSymbolException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import com.amazon.fusion.util.hamt.MultiHashTrie;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 final class IonStructLite
@@ -41,6 +44,7 @@ final class IonStructLite
 {
     private static final int HASH_SIGNATURE =
         IonType.STRUCT.toString().hashCode();
+    private static final String NULL_FIELD_NAME = "INVALID_FIELD_NAME";
     // TODO amazon-ion/ion-java/issues/41: add support for _isOrdered
 
     IonStructLite(ContainerlessContext context, boolean isNull)
@@ -59,7 +63,9 @@ final class IonStructLite
         this.hasNullFieldName = existing.hasNullFieldName;
     }
 
-    private Map<String, Integer> _field_map;
+//    private Map<String, Integer> _field_map;
+    private MultiHashTrie<String, Integer> _field_map;
+
     private boolean hasNullFieldName = false;
 
     public int                      _field_map_duplicate_count;
@@ -86,16 +92,18 @@ final class IonStructLite
     {
         int size = (_children == null) ? 0 : _children.length;
 
-        _field_map = new HashMap<>((int) Math.ceil(size / 0.75f), 0.75f); // avoids unconditional growth
+        _field_map = MultiHashTrie.<String, Integer>builderMulti().build();
+//                new ConcurrentHashMap<>((int) Math.ceil(size / 0.75f), 0.75f); // avoids unconditional growth
         _field_map_duplicate_count = 0;
 
         int count = get_child_count();
         for (int ii=0; ii<count; ii++) {
             IonValueLite v = get_child(ii);
-            if (_field_map.get(v._fieldName) != null) {
+            String fieldName = v._fieldName != null ? v._fieldName: NULL_FIELD_NAME;
+            if (_field_map.get(fieldName) != null) {
                 _field_map_duplicate_count++;
             }
-            _field_map.put(v._fieldName, ii); // this causes the map to have the largest index value stored
+            _field_map.with1(fieldName, ii); // this causes the map to have the largest index value stored
         }
     }
 
@@ -106,6 +114,7 @@ final class IonStructLite
 
     private void add_field(String fieldName, int newFieldIdx)
     {
+        fieldName = fieldName != null ? fieldName :NULL_FIELD_NAME;
         Integer idx = _field_map.get(fieldName);
         if (idx != null) {
             _field_map_duplicate_count++;
@@ -113,15 +122,17 @@ final class IonStructLite
                 newFieldIdx = idx;
             }
         }
-        _field_map.put(fieldName, newFieldIdx);
+        _field_map.with1(fieldName, newFieldIdx);
     }
     private void remove_field(String fieldName, int lowest_idx, int copies)
     {
+        fieldName = fieldName != null ? fieldName :NULL_FIELD_NAME;
+
         if (_field_map == null) {
             return;
         }
 
-        _field_map.remove(fieldName);
+        _field_map.withoutKey(fieldName);
         _field_map_duplicate_count -= (copies - 1);
     }
 
@@ -144,20 +155,20 @@ final class IonStructLite
 
             if (ii == -1) {
                 // this is the last copy of this key
-                _field_map.remove(fieldName);
+                _field_map.withoutKey(fieldName);
             }
             else {
                 // replaces this fields (the one being
                 // removed) array idx in the map with
                 // the preceding duplicates index
-                _field_map.put(fieldName, ii);
+                _field_map.with1(fieldName, ii);
                 _field_map_duplicate_count--;
             }
         }
         else {
             // since there are not dup's we can just update
             // the map by removing this fieldname
-            _field_map.remove(fieldName);
+            _field_map.withoutKey(fieldName);
         }
     }
 
@@ -181,7 +192,7 @@ final class IonStructLite
                 // if this is a field that to the right of
                 // the removed (in process of removing) value
                 // we need to patch the index value
-                _field_map.put(field_name, ii);
+                _field_map.with1(field_name, ii);
             }
         }
     }
@@ -196,7 +207,7 @@ final class IonStructLite
         }
 
         out.println("   dups: "+_field_map_duplicate_count);
-        Iterator<Entry<String, Integer>> it = _field_map.entrySet().iterator();
+        Iterator<Entry<String, Integer>> it = _field_map.iterator();
         out.print("   map: [");
         boolean first = true;
         while (it.hasNext()) {
@@ -217,7 +228,7 @@ final class IonStructLite
             return null;
         }
         String error = "";
-        Iterator<Entry<String, Integer>> it = _field_map.entrySet().iterator();
+        Iterator<Entry<String, Integer>> it = _field_map.iterator();
         while (it.hasNext()) {
             Entry<String, Integer> e = it.next();
             int idx = e.getValue();
@@ -365,6 +376,7 @@ final class IonStructLite
 
     public IonValue get(String fieldName)
     {
+        fieldName = fieldName != null ? fieldName :NULL_FIELD_NAME;
         int field_idx = find_field_helper(fieldName);
         IonValue field;
 
@@ -388,6 +400,8 @@ final class IonStructLite
 
     private int find_field_helper(String fieldName)
     {
+        fieldName = fieldName != null ? fieldName :NULL_FIELD_NAME;
+
         validateFieldName(fieldName);
 
         if (isNullValue()) {
@@ -452,7 +466,7 @@ final class IonStructLite
      */
     private void _add(String fieldName, IonValueLite child)
     {
-        hasNullFieldName |= fieldName == null;
+        hasNullFieldName |= fieldName == NULL_FIELD_NAME;
 
         // add this to the Container child collection
         add(_child_count, child);
@@ -740,7 +754,7 @@ final class IonStructLite
      */
     private static void validateFieldName(String fieldName)
     {
-        if (fieldName == null)
+        if (fieldName == null || fieldName == NULL_FIELD_NAME)
         {
             throw new NullPointerException("fieldName is null");
         }
